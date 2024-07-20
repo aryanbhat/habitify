@@ -15,6 +15,10 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { z } from "zod";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { MouseEventHandler } from "react";
 
 function Login() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -47,11 +51,17 @@ function Login() {
     }
   }
 
+  const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = () => {
+    toast.success("done");
+  };
+
   return (
-    <div className=" w-screen h-screen flex flex-col justify-center items-center ">
+    <div className=" w-full h-full flex flex-col justify-center items-center ">
       <Card className="sm:w-screen md:w-1/3  px-4 py-2 shadow-md">
         <CardHeader>
-          <CardTitle className=" text-xl text-center">Login</CardTitle>
+          <CardTitle className=" text-xl text-center">
+            Welcome Aboard!
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -92,11 +102,22 @@ function Login() {
               <Button className="w-full" type="submit">
                 Login
               </Button>
-              <div className=" text-center">
-                Don't have an account? <Link to={"/register"}>Register here</Link>{" "}
-              </div>
             </form>
           </Form>
+          <div className="w-full bg-slate-400 h-px my-5"></div>
+          <Button className=" w-full flex gap-3" onClick={handleGoogleLogin}>
+            <FontAwesomeIcon icon={faGoogle} />
+            <span>Continue with Google</span>
+          </Button>
+          <div className=" text-center mt-3">
+            Don't have an account?{" "}
+            <Link
+              to={"/register"}
+              className=" hover:underline-offset-2 hover:underline"
+            >
+              Register here
+            </Link>{" "}
+          </div>
         </CardContent>
       </Card>
     </div>

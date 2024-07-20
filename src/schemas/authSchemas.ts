@@ -1,16 +1,17 @@
 import axios from "axios";
 import { z } from "zod";
 
-async function isUsernameUnique(username) {
+function isUsernameUnique(username: string) {
   try {
-    const formData = {
-      username,
-    };
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/username`,
-      formData
-    );
-    return res.data.isUnique;
+    console.log(username);
+    // const formData = {
+    //   username,
+    // };
+    // const res = await axios.post(
+    //   `${import.meta.env.VITE_API_URL}/api/auth/username`,
+    //   formData
+    // );
+    return true;
   } catch (err) {
     alert("an error occured");
     return;
@@ -42,8 +43,8 @@ const registerSchema = z
           message: "Username is already taken",
         }
       ),
-    password: z.string().min(2).max(50),
-    confirmPassword: z.string().min(2).max(50),
+    password: z.string().min(6).max(50),
+    confirmPassword: z.string().min(6).max(50),
   })
   .refine(
     (data) => {
@@ -65,8 +66,7 @@ const loginSchema = z.object({
     .email({
       message: "please enter a valid email",
     }),
-  password: z.string().min(2).max(50),
+  password: z.string().min(6).max(50),
 });
-
 
 export { registerSchema, loginSchema };

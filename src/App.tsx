@@ -3,10 +3,12 @@ import "./App.css";
 import Login from "./page/Login";
 import Register from "./page/Register";
 import Landing from "./page/Landing";
+import Navbar from "./components/ui/navbar";
 
 function App() {
   return (
-    <div>
+    <div className=" w-screen flex flex-col justify-center items-center overflow-x-hidden">
+      <Navbar />
       <Routes>
         <Route index element={<Landing />} />
         <Route path="/register" element={<Register />} />

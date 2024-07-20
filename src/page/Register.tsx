@@ -13,11 +13,19 @@ import { registerSchema } from "@/schemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+// import axios from "axios";
+// import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Register() {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -28,31 +36,37 @@ function Register() {
     },
   });
 
+  function handleGoogleLogin() {
+    toast.success("done");
+  }
+
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
-      const formData = {
-        email: values.email,
-        username: values.username,
-        password: values.password,
-      };
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/signup`,
-        formData
+      createUserWithEmailAndPassword(auth, values.email, values.password).then(
+        (userCred) => {
+          if (userCred) {
+            updateProfile(userCred.user, {
+              displayName: values?.username,
+            })
+              .then(() => {
+                console.log(userCred.user);
+                navigate("/");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            console.log("no user");
+          }
+        }
       );
-      const data = res.data;
-      localStorage.setItem("token", data.token);
-      toast.success("successfully registered", { id: "signup" });
     } catch (err) {
-      if (err.response.status === 409) {
-        toast.error("user already exists with this email", { id: "signup" });
-      } else {
-        toast.error("an error occured", { id: "signup" });
-      }
+      console.log(err);
     }
   }
 
   return (
-    <div className=" w-screen h-screen flex flex-col justify-center items-center ">
+    <div className=" w-full h-full flex flex-col justify-center items-center ">
       <Card className="sm:w-screen md:w-1/3  px-4 py-2 shadow-md">
         <CardHeader>
           <CardTitle className=" text-xl text-center">Register</CardTitle>
@@ -90,7 +104,12 @@ function Register() {
                       This will appear on your public profile
                     </FormDescription>
                     <FormControl>
-                      <Input autoComplete="off" type="string" placeholder="John" {...field} />
+                      <Input
+                        autoComplete="off"
+                        type="string"
+                        placeholder="John"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -125,9 +144,22 @@ function Register() {
               <Button className="w-full" type="submit">
                 Register
               </Button>
-                <div className=" text-center" >Already have an account? <Link to={"/login"} >Login here</Link> </div>
             </form>
           </Form>
+          <div className="w-full bg-slate-400 h-px my-5"></div>
+          <Button className=" w-full flex gap-3" onClick={handleGoogleLogin}>
+            <FontAwesomeIcon icon={faGoogle} />
+            <span>Continue with Google</span>
+          </Button>
+          <div className=" text-center mt-3">
+            Already have an account?{" "}
+            <Link
+              to={"/login"}
+              className=" hover:underline-offset-2 hover:underline"
+            >
+              Login here
+            </Link>{" "}
+          </div>
         </CardContent>
       </Card>
     </div>
