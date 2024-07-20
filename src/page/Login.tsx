@@ -12,15 +12,21 @@ import { loginSchema } from "@/schemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { MouseEventHandler } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/stores/userSlice/userSlice";
+import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 
 function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -31,23 +37,27 @@ function Login() {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
-      const formData = {
-        email: values.email,
-        password: values.password,
-      };
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        formData
+      const userCred = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
       );
-      const data = res.data;
-      localStorage.setItem("token", data.token);
-      toast.success("successfully logged in", { id: "login" });
-    } catch (err) {
-      if (err.response.status === 403) {
-        toast.error("invalid email or password", { id: "login" });
+      if (userCred) {
+        dispatch(
+          setUser({
+            username: userCred.user.displayName,
+            uid: userCred.user.uid,
+          })
+        );
+        dispatch(setNavbarState(0));
+        toast.success("Login successfull");
+        navigate("/");
       } else {
-        toast.error("an error occured", { id: "login" });
+        toast.error("Something is wrong please try again");
       }
+    } catch (err) {
+      toast.error(err.message);
+      console.log(err);
     }
   }
 

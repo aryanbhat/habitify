@@ -1,19 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 
 function Landing() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   const handleRedirection: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(setNavbarState(2));
     navigate("/login");
   };
+
+  useEffect(() => {
+    console.log(user.username, user.uid);
+  }, [user]);
 
   return (
     <div className=" w-screen h-fit flex flex-col gap-8 justify-center ">

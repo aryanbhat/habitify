@@ -13,18 +13,21 @@ import { registerSchema } from "@/schemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-// import axios from "axios";
-// import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/firebaseConfig";
+import { auth, db } from "@/firebaseConfig";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { addDoc, collection } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/stores/userSlice/userSlice";
+import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 
 function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -42,26 +45,32 @@ function Register() {
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
-      createUserWithEmailAndPassword(auth, values.email, values.password).then(
-        (userCred) => {
-          if (userCred) {
-            updateProfile(userCred.user, {
-              displayName: values?.username,
-            })
-              .then(() => {
-                console.log(userCred.user);
-                navigate("/");
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          } else {
-            console.log("no user");
-          }
-        }
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        values?.email,
+        values?.password
       );
+      if (userCred) {
+        await updateProfile(userCred.user, {
+          displayName: values?.username,
+        });
+        console.log(userCred.user);
+        await addDoc(collection(db, "users"), {
+          email: values?.email,
+          username: values?.username,
+        });
+        dispatch(
+          setUser({
+            username: userCred?.user?.displayName,
+            uid: userCred?.user?.uid,
+          })
+        );
+        toast.success("🎉 Signup successful! Welcome aboard!");
+        navigate("/");
+        dispatch(setNavbarState(0));
+      }
     } catch (err) {
-      console.log(err);
+      toast.error(err.message);
     }
   }
 
