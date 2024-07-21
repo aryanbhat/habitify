@@ -11,14 +11,23 @@ export default function Navbar() {
   const activeIdx = useSelector((state) => state.navbar.activeIdx);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
       }
     });
   }, [auth, user]);
+
+  if (loggedIn === undefined) {
+    return (
+      <div className="w-screen  h-16 flex justify-center items-center mb-3 "></div>
+    );
+  }
+
   return (
     <div className=" w-screen  h-16 flex justify-center items-center mb-3">
       {!loggedIn ? (
@@ -69,7 +78,7 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(0));
-              navigate("/");
+              navigate("/habits");
             }}
           >
             Habits
@@ -81,7 +90,7 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(1));
-              navigate("/");
+              navigate("/profile");
             }}
           >
             Profile
@@ -93,7 +102,7 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(2));
-              navigate("/login");
+              navigate("/settings");
             }}
           >
             Settings

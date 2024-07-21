@@ -15,7 +15,12 @@ import { FormControl } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { auth, db } from "@/firebaseConfig";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import toast from "react-hot-toast";
@@ -24,11 +29,12 @@ import { addDoc, collection } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
+import { MouseEventHandler } from "react";
 
 function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const googleProvider = new GoogleAuthProvider();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -38,10 +44,6 @@ function Register() {
       confirmPassword: "",
     },
   });
-
-  function handleGoogleLogin() {
-    toast.success("done");
-  }
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
     try {
@@ -74,9 +76,29 @@ function Register() {
     }
   }
 
+  const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = async () => {
+    try {
+      const userCred = await signInWithPopup(auth, googleProvider);
+      if (userCred) {
+        dispatch(
+          setUser({
+            username: userCred?.user?.displayName,
+            uid: userCred?.user?.uid,
+          })
+        );
+        dispatch(setNavbarState(0));
+        toast.success("Login successfull");
+        navigate("/habits");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+      console.log(err);
+    }
+  };
+
   return (
-    <div className=" w-full h-full flex flex-col justify-center items-center ">
-      <Card className="sm:w-screen md:w-1/3  px-4 py-2 shadow-md">
+    <div className=" w-full h-full flex flex-col justify-center items-center  ">
+      <Card className=" w-full sm:w-full md:w-1/2 lg:w-1/2  px-4 py-2 shadow-md">
         <CardHeader>
           <CardTitle className=" text-xl text-center">Register</CardTitle>
         </CardHeader>

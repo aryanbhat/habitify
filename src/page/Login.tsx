@@ -18,13 +18,18 @@ import { z } from "zod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { MouseEventHandler } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 
 function Login() {
+  const googleProvider = new GoogleAuthProvider();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -45,13 +50,13 @@ function Login() {
       if (userCred) {
         dispatch(
           setUser({
-            username: userCred.user.displayName,
-            uid: userCred.user.uid,
+            username: userCred?.user?.displayName,
+            uid: userCred?.user?.uid,
           })
         );
         dispatch(setNavbarState(0));
         toast.success("Login successfull");
-        navigate("/");
+        navigate("/habits");
       } else {
         toast.error("Something is wrong please try again");
       }
@@ -61,13 +66,29 @@ function Login() {
     }
   }
 
-  const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = () => {
-    toast.success("done");
+  const handleGoogleLogin: MouseEventHandler<HTMLButtonElement> = async () => {
+    try {
+      const userCred = await signInWithPopup(auth, googleProvider);
+      if (userCred) {
+        dispatch(
+          setUser({
+            username: userCred?.user?.displayName,
+            uid: userCred?.user?.uid,
+          })
+        );
+        dispatch(setNavbarState(0));
+        toast.success("Login successfull");
+        navigate("/habits");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+      console.log(err);
+    }
   };
 
   return (
-    <div className=" w-full h-full flex flex-col justify-center items-center ">
-      <Card className="sm:w-screen md:w-1/3  px-4 py-2 shadow-md">
+    <div className=" w-full h-full flex flex-col justify-center items-center  ">
+      <Card className=" w-full sm:w-full md:w-1/2 lg:w-1/2  px-4 py-2 shadow-md">
         <CardHeader>
           <CardTitle className=" text-xl text-center">
             Welcome Aboard!
