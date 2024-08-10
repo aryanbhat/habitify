@@ -5,6 +5,7 @@ import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
+import { setUser } from "@/stores/userSlice/userSlice";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -15,12 +16,21 @@ export default function Navbar() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
+        dispatch(
+          setUser({
+            username: user.displayName,
+            email: user.email,
+            uid: user.uid,
+            profile: user.photoURL,
+          })
+        );
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
       }
     });
-  }, [auth, user]);
+  }, [auth]);
 
   if (loggedIn === undefined) {
     return (

@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MouseEventHandler, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
+import { auth } from "@/firebaseConfig";
+
+import AnimatedComponent from "@/components/AnimatedComponent";
 
 function Landing() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
 
   const handleRedirection: MouseEventHandler<HTMLButtonElement> = () => {
     dispatch(setNavbarState(2));
@@ -17,11 +19,15 @@ function Landing() {
   };
 
   useEffect(() => {
-    console.log(user.username, user.uid);
-  }, [user]);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigate("/habits");
+      }
+    });
+  }, []);
 
   return (
-    <div className=" w-screen h-fit flex flex-col gap-8 justify-center ">
+    <AnimatedComponent>
       <div className="content max-w-5xl mx-auto">
         <div className=" tagline text-4xl text-center  ">
           Track your habits with beautiful calendar heat maps and customizable
@@ -36,7 +42,7 @@ function Landing() {
           <FontAwesomeIcon icon={faArrowRight} />
         </Button>
       </div>
-    </div>
+    </AnimatedComponent>
   );
 }
 

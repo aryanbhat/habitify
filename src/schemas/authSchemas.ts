@@ -1,37 +1,31 @@
-import axios from "axios";
+import { db } from "@/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
-function isUsernameUnique(username: string) {
+// Function to check if the username is unique
+async function isUsernameUnique(username: string): Promise<boolean> {
   try {
-    console.log(username);
-    // const formData = {
-    //   username,
-    // };
-    // const res = await axios.post(
-    //   `${import.meta.env.VITE_API_URL}/api/auth/username`,
-    //   formData
-    // );
-    return true;
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const qSnap = await getDocs(q);
+    return qSnap.empty; // Return true if no matching documents
   } catch (err) {
-    alert("an error occured");
-    return;
+    toast.error("An error occurred, Please try again");
+    return false;
   }
 }
 
+// Zod schema with async validation using preprocess
 const registerSchema = z
   .object({
     email: z
       .string()
-      .min(1, {
-        message: "please enter a valid email",
-      })
+      .min(1, { message: "Please enter a valid email" })
       .max(50)
-      .email({
-        message: "please enter a valid email",
-      }),
+      .email({ message: "Please enter a valid email" }),
     username: z
       .string()
-      .min(1, { message: "please enter your name" })
+      .min(1, { message: "Please enter your name" })
       .max(50)
       .refine(
         async (username) => {
@@ -39,34 +33,43 @@ const registerSchema = z
           return isUnique;
         },
         {
-          async: true,
           message: "Username is already taken",
         }
       ),
     password: z.string().min(6).max(50),
     confirmPassword: z.string().min(6).max(50),
   })
-  .refine(
-    (data) => {
-      return data.password === data.confirmPassword;
-    },
-    {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+// Preprocess function to handle async validation
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function preprocessRegisterData(data: any) {
+  console.log("data", data);
+  if (typeof data.username === "string") {
+    const isUnique = await isUsernameUnique(data.username);
+    if (!isUnique) {
+      // toast.error("Username is already taken");
     }
-  );
+  }
+  return data;
+}
+
+// Schema with preprocessing
+const registerSchemaWithPreprocess = z.preprocess(
+  preprocessRegisterData,
+  registerSchema
+);
 
 const loginSchema = z.object({
   email: z
     .string()
-    .min(1, {
-      message: "please enter a valid email",
-    })
+    .min(1, { message: "Please enter a valid email" })
     .max(50)
-    .email({
-      message: "please enter a valid email",
-    }),
+    .email({ message: "Please enter a valid email" }),
   password: z.string().min(6).max(50),
 });
 
-export { registerSchema, loginSchema };
+export { registerSchemaWithPreprocess as registerSchema, loginSchema };

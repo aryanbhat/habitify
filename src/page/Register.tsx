@@ -25,11 +25,12 @@ import { auth, db } from "@/firebaseConfig";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { MouseEventHandler } from "react";
+import AnimatedComponent from "@/components/AnimatedComponent";
 
 function Register() {
   const navigate = useNavigate();
@@ -65,10 +66,12 @@ function Register() {
           setUser({
             username: userCred?.user?.displayName,
             uid: userCred?.user?.uid,
+            email: userCred?.user?.email,
+            profile: userCred?.user?.photoURL,
           })
         );
         toast.success("🎉 Signup successful! Welcome aboard!");
-        navigate("/");
+        navigate("/habits");
         dispatch(setNavbarState(0));
       }
     } catch (err) {
@@ -84,8 +87,29 @@ function Register() {
           setUser({
             username: userCred?.user?.displayName,
             uid: userCred?.user?.uid,
+            email: userCred?.user?.email,
+            profile: userCred?.user?.photoURL,
           })
         );
+        const user = userCred.user;
+        if (user.email) {
+          const docRef = doc(db, "users", user.email);
+          const userSnap = await getDoc(docRef);
+          if (userSnap.exists()) {
+            await setDoc(
+              docRef,
+              {
+                username: user.displayName,
+              },
+              { merge: true }
+            );
+          } else {
+            await setDoc(docRef, {
+              email: user.email,
+              username: user.displayName,
+            });
+          }
+        }
         dispatch(setNavbarState(0));
         toast.success("Login successfull");
         navigate("/habits");
@@ -97,8 +121,8 @@ function Register() {
   };
 
   return (
-    <div className=" w-full h-full flex flex-col justify-center items-center  ">
-      <Card className=" w-full sm:w-full md:w-1/2 lg:w-1/2  px-4 py-2 shadow-md">
+    <AnimatedComponent>
+      <Card className=" w-full sm:w-full md:full lg:w-[30vw] px-4 py-2 shadow-md">
         <CardHeader>
           <CardTitle className=" text-xl text-center">Register</CardTitle>
         </CardHeader>
@@ -193,7 +217,7 @@ function Register() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </AnimatedComponent>
   );
 }
 

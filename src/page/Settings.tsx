@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import AnimatedComponent from "@/components/AnimatedComponent";
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -25,11 +26,11 @@ const Settings = () => {
   }
 
   return (
-    <div className=" w-full max-w-3xl flex flex-col justify-center items-center">
+    <AnimatedComponent>
       <Button variant="destructive" onClick={handleLogout}>
         Log out
       </Button>
-    </div>
+    </AnimatedComponent>
   );
 };
 
