@@ -5,16 +5,15 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, { payload }) => {
-      state.username = payload?.username;
-      state.uid = payload?.uid;
-      state.email = payload?.email;
-      state.profile = payload?.profile;
+      if (payload) {
+        state.user = {
+          ...state.user,
+          ...payload,
+        };
+      }
     },
     resetUser: (state) => {
-      state.username = initialState.username;
-      state.username = initialState.uid;
-      state.email = initialState.email;
-      state.profile = initialState.profile;
+      state.user = initialState.user;
     },
   },
 });

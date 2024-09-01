@@ -27,8 +27,23 @@ import { auth, db } from "@/firebaseConfig";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import AnimatedComponent from "@/components/AnimatedComponent";
+
+// type checkUserResult = {
+//   uid: string | null;
+//   flag: boolean;
+// };
 
 function Login() {
   const googleProvider = new GoogleAuthProvider();
@@ -41,6 +56,30 @@ function Login() {
       password: "",
     },
   });
+
+  // async function checkUserByEmail(
+  //   email: string
+  // ): Promise<checkUserResult | undefined> {
+  //   try {
+  //     const userRef = collection(db, "users");
+  //     const q = query(userRef, where("email", "==", email));
+  //     const querySnapshot = await getDocs(q);
+  //     if (!querySnapshot.empty) {
+  //       console.log(querySnapshot.docs[0].data());
+  //       return {
+  //         uid: querySnapshot.docs[0].data().uid,
+  //         flag: true,
+  //       };
+  //     } else {
+  //       return {
+  //         uid: null,
+  //         flag: false,
+  //       };
+  //     }
+  //   } catch (err) {
+  //     console.error("Error checking user by email:", err);
+  //   }
+  // }
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
@@ -84,21 +123,31 @@ function Login() {
         );
         const user = userCred.user;
         if (user.email) {
-          const docRef = doc(db, "users", user.email);
-          const userSnap = await getDoc(docRef);
-          if (userSnap.exists()) {
-            await setDoc(
-              docRef,
-              {
-                username: user.displayName,
-              },
-              { merge: true }
+          const usersCollection = collection(db, "users");
+          const q = query(usersCollection, where("email", "==", user.email));
+          const userSnap = await getDocs(q);
+
+          if (!userSnap.empty) {
+            const userDoc = userSnap.docs[0];
+            await updateDoc(doc(db, "users", userDoc.id), {
+              username: user.displayName,
+            });
+            dispatch(
+              setUser({
+                uid: userDoc.id,
+              })
             );
           } else {
-            await setDoc(docRef, {
+            const newUserRef = await addDoc(collection(db, "users"), {
               email: user.email,
               username: user.displayName,
             });
+            console.log("New user added with ID: ", newUserRef.id);
+            dispatch(
+              setUser({
+                uid: newUserRef.id,
+              })
+            );
           }
         }
         dispatch(setNavbarState(0));

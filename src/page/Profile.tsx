@@ -1,26 +1,19 @@
 import AnimatedComponent from "@/components/AnimatedComponent";
-
-import { auth } from "@/firebaseConfig";
-import { User } from "firebase/auth";
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      }
-    });
-  }, []);
+    console.log(user);
+  }, [user]);
 
   return (
     <AnimatedComponent>
       {user && (
         <div>
-          <h1>{user.displayName}</h1>
+          <h1>{user.username}</h1>
           <h2>{user.email}</h2>
           <h2>{user.uid}</h2>
         </div>

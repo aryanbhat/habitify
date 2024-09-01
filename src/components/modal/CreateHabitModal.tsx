@@ -30,7 +30,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Checkbox } from "../ui/checkbox";
-import { InputTags } from "../ui/inputTags";
+// import { InputTags } from "../ui/inputTags";
+import { colors } from "@/constants/habitColor";
 
 function CreateHabitModal() {
   const form = useForm<z.infer<typeof habitSchema>>({
@@ -38,10 +39,10 @@ function CreateHabitModal() {
     defaultValues: {
       title: "",
       type: "checkbox",
-      streak: false,
+      streak: true,
       longestStreak: false,
       total: false,
-      color: ["#9be9a8", "#40c463", "#30a14e", "#216e39"],
+      color: "green",
     },
   });
 
@@ -185,7 +186,28 @@ function CreateHabitModal() {
                 <FormItem>
                   <FormLabel>Add Color(s)</FormLabel>
                   <FormControl>
-                    <InputTags {...field} />
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Color" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {colors.map((elem: string) => {
+                          return (
+                            <SelectItem value={elem}>
+                              <div className=" flex items-center justify-between w-24 ">
+                                <span>{elem}</span>
+                                <div
+                                  className=" h-4 w-4 rounded-xl"
+                                  style={{
+                                    backgroundColor: elem,
+                                  }}
+                                ></div>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   {/* <FormDescription>...</FormDescription> */}
                   <FormMessage />

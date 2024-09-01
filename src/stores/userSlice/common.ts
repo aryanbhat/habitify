@@ -1,6 +1,8 @@
 export const initialState = {
-  username: null,
-  uid: null,
-  email: null,
-  profile: null,
+  user: {
+    username: null,
+    email: null,
+    profile: null,
+    uid: null,
+  },
 };

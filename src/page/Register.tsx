@@ -104,7 +104,7 @@ function Register() {
               { merge: true }
             );
           } else {
-            await setDoc(docRef, {
+            await addDoc(collection(db, "users"), {
               email: user.email,
               username: user.displayName,
             });

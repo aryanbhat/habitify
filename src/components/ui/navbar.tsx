@@ -17,14 +17,13 @@ export default function Navbar() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log(user);
-        dispatch(
-          setUser({
-            username: user.displayName,
-            email: user.email,
-            uid: user.uid,
-            profile: user.photoURL,
-          })
-        );
+        const userData = {
+          username: user?.displayName,
+          email: user?.email,
+          uid: user?.uid,
+          profile: user?.photoURL,
+        };
+        dispatch(setUser(userData));
         setLoggedIn(true);
       } else {
         setLoggedIn(false);
