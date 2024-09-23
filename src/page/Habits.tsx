@@ -1,15 +1,33 @@
 import CreateHabitModal from "@/components/modal/CreateHabitModal";
 import HabitCalendar from "@/components/HabitCalendar";
 import AnimatedComponent from "@/components/AnimatedComponent";
+import { CalendarValue, HabitValue } from "@/Types/type";
 
 const Habits = () => {
-  const data = [
-    { value: 100, day: "2016-02-05" },
+  // date format is yyyy-mm-dd
+  const calendarValue: CalendarValue[] = [
+    { value: 100, day: "2024-02-05" },
     {
       value: 10,
-      day: "2016-10-05",
+      day: "2024-10-05",
+    },
+    {
+      value: 25,
+      day: "2024-05-14",
+    },
+    {
+      value: 60,
+      day: "2024-05-15",
     },
   ];
+
+  const data: HabitValue = {
+    title: "DSA",
+    longest_streak: 50,
+    curr_streak: 10,
+    total_entries: 70,
+    value: calendarValue,
+  };
 
   return (
     <AnimatedComponent>
