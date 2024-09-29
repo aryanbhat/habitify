@@ -47,7 +47,11 @@ function CreateHabitModal() {
   });
 
   async function onSubmit(values: z.infer<typeof habitSchema>) {
-    console.log(values);
+    const newHabit = {
+      ...values,
+      value: [],
+    };
+    console.log(newHabit);
   }
 
   return (

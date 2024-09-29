@@ -23,10 +23,11 @@ const Habits = () => {
 
   const data: HabitValue = {
     title: "DSA",
-    longest_streak: 50,
-    curr_streak: 10,
-    total_entries: 70,
+    longest_streak: true,
+    curr_streak: true,
+    total_entries: true,
     value: calendarValue,
+    color: "purple",
   };
 
   return (

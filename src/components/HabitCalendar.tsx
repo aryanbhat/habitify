@@ -1,12 +1,21 @@
 import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { HabitValue } from "@/Types/type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { colorsPallete } from "@/constants/habitColor";
+import { calculateStreaks } from "@/utils/calculateStreak";
 
 export default function HabitCalendar(props: { data: HabitValue }) {
   const data: HabitValue = props.data;
 
   const [values, setValues] = useState(data.value);
+
+  useEffect(() => {
+    const { totalEntries, currentStreak, longestStreak } =
+      calculateStreaks(values);
+
+    console.log(totalEntries, currentStreak, longestStreak);
+  }, [values]);
 
   const theme = {
     text: {
@@ -26,9 +35,10 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   };
 
   return (
-    <div className="bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
+    <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight">{data.title}</h2>
+
         <div className="lg:w-[80vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
           <ResponsiveCalendar
             onClick={(date) => {
@@ -44,7 +54,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             theme={theme}
             to="2024-12-31"
             emptyColor="#131D33"
-            colors={["#9be9a8", "#40c463", "#30a14e", "#216e39"]}
+            colors={colorsPallete[data.color as keyof typeof colorsPallete]}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             yearSpacing={40}
             monthBorderColor="#020817"
@@ -64,26 +74,26 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             ]}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
           {data.longest_streak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}
               label="Longest Streak"
-              value={data.longest_streak}
+              value={10}
             />
           )}
           {data.curr_streak && (
             <StatCard
               icon={<CalendarIcon className="w-6 h-6" />}
               label="Current Streak"
-              value={data.curr_streak}
+              value={20}
             />
           )}
           {data.total_entries && (
             <StatCard
               icon={<BarChartIcon className="w-6 h-6" />}
               label="Total Entries"
-              value={data.total_entries}
+              value={30}
             />
           )}
         </div>
