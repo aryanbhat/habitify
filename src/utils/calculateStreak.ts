@@ -1,69 +1,55 @@
 import { CalendarValue } from "@/Types/type";
+import { binarySearchDates, formatDate } from "./formatDate";
 
 export function calculateStreaks(calendarValue: CalendarValue[]) {
-  // Sort the array by date in descending order
-  const sortedData = calendarValue.sort(
-    (a, b) => new Date(b.day).getTime() - new Date(a.day).getTime()
-  );
-
-  const dates = sortedData.map((data) => {
-    return data.day;
-  });
-  console.log(dates);
-
+  const dayDiff = 86400000;
   let currentStreak = 0;
   let longestStreak = 0;
-  let tempStreak = 0;
 
+  // finding currentStreak
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to beginning of the day
   const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setDate(today.getDate() - 1);
 
-  let previousDate: Date | null = null;
+  const newDates = calendarValue
+    .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
+    .map((elem) => {
+      return elem.day;
+    });
 
-  for (const entry of sortedData) {
-    const currentDate = new Date(entry.day);
-    currentDate.setHours(0, 0, 0, 0); // Set to beginning of the day
+  //finding the index of yesterday in the newDates array using binarySearch
+  const idx = binarySearchDates(newDates, formatDate(yesterday));
 
-    if (previousDate === null) {
-      // First iteration
-      tempStreak = 1;
-      if (currentDate.getTime() === yesterday.getTime()) {
-        currentStreak = 1;
-      }
-    } else {
-      const diffDays =
-        (previousDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
-
-      if (diffDays === 1) {
-        // Consecutive day
+  //if i get the idx i.e yesterday's date is present there
+  if (idx != -1) {
+    let tempStreak = 1;
+    for (let i = idx - 1; i > 0; i--) {
+      if (
+        new Date(newDates[i + 1]).getTime() -
+          new Date(newDates[i]).getTime() ===
+        dayDiff
+      ) {
         tempStreak++;
-        if (previousDate <= yesterday) {
-          currentStreak++;
-        }
       } else {
-        // Streak broken
-        longestStreak = Math.max(longestStreak, tempStreak);
-        tempStreak = 1;
-        if (currentStreak === 0 && currentDate <= yesterday) {
-          currentStreak = 1;
-        } else {
-          currentStreak = 0;
-        }
+        break;
       }
     }
-
-    // Break the loop if we've gone past the day before yesterday
-    if (currentDate < yesterday) {
-      break;
-    }
-
-    previousDate = currentDate;
+    currentStreak = tempStreak;
   }
 
-  // Check if the last streak is the longest
-  longestStreak = Math.max(longestStreak, tempStreak);
+  //to find the longestStreak
+  let tempStreak = 1;
+  for (let i = 1; i < newDates.length; i++) {
+    if (
+      new Date(newDates[i]).getTime() - new Date(newDates[i - 1]).getTime() ===
+      dayDiff
+    ) {
+      tempStreak++;
+    } else {
+      longestStreak = Math.max(longestStreak, tempStreak);
+      tempStreak = 1;
+    }
+  }
 
   return {
     totalEntries: calendarValue.length,

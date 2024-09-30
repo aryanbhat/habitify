@@ -27,7 +27,7 @@ const Habits = () => {
     curr_streak: true,
     total_entries: true,
     value: calendarValue,
-    color: "purple",
+    color: "green",
   };
 
   return (
