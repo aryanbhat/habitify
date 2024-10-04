@@ -4,12 +4,12 @@ import { resetNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { resetUser } from "@/stores/userSlice/userSlice";
 import { signOut } from "firebase/auth";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AnimatedComponent from "@/components/AnimatedComponent";
+import { useAppDispatch } from "@/hooks/reduxHook";
 
 const Settings = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   async function handleLogout() {

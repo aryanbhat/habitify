@@ -6,18 +6,22 @@ import { CalendarValue, HabitValue } from "@/Types/type";
 const Habits = () => {
   // date format is yyyy-mm-dd
   const calendarValue: CalendarValue[] = [
-    { value: 100, day: "2024-02-05" },
+    { value: 1, day: "2024-02-05" },
     {
-      value: 10,
+      value: 1,
       day: "2024-10-05",
     },
     {
-      value: 25,
+      value: 1,
       day: "2024-05-14",
     },
     {
-      value: 60,
+      value: 1,
       day: "2024-05-15",
+    },
+    {
+      value: 1,
+      day: "2024-08-16",
     },
   ];
 
@@ -27,14 +31,15 @@ const Habits = () => {
     curr_streak: true,
     total_entries: true,
     value: calendarValue,
-    color: "green",
+    color: "blue",
+    type: "checkbox",
+    unit: "question",
   };
 
   return (
     <AnimatedComponent>
       <div className=" flex flex-col items-center justify-center gap-6">
         <CreateHabitModal />
-
         <HabitCalendar data={data} />
       </div>
     </AnimatedComponent>

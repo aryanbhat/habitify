@@ -1,6 +1,6 @@
 import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
-import { HabitValue } from "@/Types/type";
+import { CalendarValue, HabitValue } from "@/Types/type";
 import React, { useEffect, useState } from "react";
 import { colorsPallete } from "@/constants/habitColor";
 import { calculateStreaks } from "@/utils/calculateStreak";
@@ -15,6 +15,8 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import toast from "react-hot-toast";
+import { Checkbox } from "./ui/checkbox";
 
 interface CalendarData {
   longestStreak: number;
@@ -27,6 +29,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
 
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
+  const [currentDay, setCurrentDay] = useState<string | null>("");
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -34,9 +37,9 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   });
 
   useEffect(() => {
-    console.log(values);
     const { totalEntries, currentStreak, longestStreak } =
       calculateStreaks(values);
+
     setCalendarData({
       totalEntries,
       currentStreak,
@@ -65,15 +68,20 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight">{data.title}</h2>
-        <ElementDialog open={open} setOpen={setOpen} />
+        <ElementDialog
+          open={open}
+          setOpen={setOpen}
+          currentDay={currentDay}
+          type={data.type}
+          setValues={setValues}
+          unit={data.unit}
+        />
         <div className="lg:w-[80vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
           <ResponsiveCalendar
             onClick={(date) => {
-              const newValue = {
-                value: 100,
-                day: date.day,
-              };
-              setValues([...values, newValue]);
+              toast.success(date.day);
+              setCurrentDay(date.day);
+              setOpen(true);
             }}
             data={values}
             from="2024-01-01"
@@ -131,31 +139,69 @@ export default function HabitCalendar(props: { data: HabitValue }) {
 function ElementDialog({
   open,
   setOpen,
+  currentDay,
+  type,
+  setValues,
+  unit,
 }: {
   open: boolean;
   setOpen: React.Dispatch<boolean>;
+  currentDay: string | null;
+  type: string;
+  setValues: React.Dispatch<CalendarValue[]>;
+  unit: string;
 }) {
+  const [value, setValue] = useState<number | "">(0); // State for numeric input
+  const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
+
+  function handleClose() {
+    if (currentDay) {
+      toast.error(currentDay);
+    }
+    setValue("");
+    setIsChecked(false);
+    setOpen(!open);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>Track the day</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Add the value and mark the checkbox for this day. Click save when
+            you're done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
+            <Label htmlFor="value" className="text-right flex gap-2">
+              Value
+              <span className=" text-slate-500 ">({unit})</span>
             </Label>
-            <Input id="name" value="Pedro Duarte" className="col-span-3" />
+            <Input
+              id="value"
+              type="number"
+              value={value}
+              onChange={(e) =>
+                setValue(e.target.value ? parseInt(e.target.value) : "")
+              }
+              className="col-span-3"
+              placeholder="Enter value"
+            />
           </div>
+          {/* Checkbox input using Shadcn Checkbox component */}
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
+            <Label htmlFor="check" className="text-right">
+              Completed
             </Label>
-            <Input id="username" value="@peduarte" className="col-span-3" />
+            <div className="col-span-1">
+              <Checkbox
+                id="check"
+                checked={isChecked}
+                onCheckedChange={(checked) => setIsChecked(!!checked)}
+              />
+            </div>
           </div>
         </div>
         <DialogFooter>
@@ -185,7 +231,7 @@ function StatCard({
           {label}
         </div>
         <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-          {value}
+          {value} days
         </div>
       </div>
     </div>

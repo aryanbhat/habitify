@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,10 +31,19 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Checkbox } from "../ui/checkbox";
-// import { InputTags } from "../ui/inputTags";
 import { colors } from "@/constants/habitColor";
+import { ScrollArea } from "../ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 function CreateHabitModal() {
+  const [open, setOpen] = useState(false);
+
   const form = useForm<z.infer<typeof habitSchema>>({
     resolver: zodResolver(habitSchema),
     defaultValues: {
@@ -42,7 +52,8 @@ function CreateHabitModal() {
       streak: true,
       longestStreak: false,
       total: false,
-      color: "green",
+      color: "coral",
+      unit: "",
     },
   });
 
@@ -52,36 +63,71 @@ function CreateHabitModal() {
       value: [],
     };
     console.log(newHabit);
+    setOpen(false);
   }
 
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      form.reset();
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>Create a Habit</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Create a Habit</DialogTitle>
           <DialogDescription>
-            Enter the details of the Habit you want to track
+            Define the Habit you want to track on your heatmap.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className=" space-y-7 flex flex-col"
+            className="space-y-7 flex flex-col"
           >
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
-                <FormItem className=" flex flex-col">
+                <FormItem className="flex flex-col">
                   <FormLabel>Title</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Meditation" {...field} />
+                    <Input
+                      type="text"
+                      placeholder="Meditation"
+                      required
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
-                    This will be the title for you habit{" "}
+                    Choose a title for your habit
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="unit"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Measurement Unit</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="e.g, minutes, pages, times"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Specify the unit you'll use to measure (e.g minutes
+                    meditated)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -92,15 +138,19 @@ function CreateHabitModal() {
               name="type"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Tracking Type</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="checkbox">Checkbox</SelectItem>
-                        <SelectItem value="number">Number</SelectItem>
+                        <SelectItem value="checkbox">
+                          Checkbox (Done / Not Done)
+                        </SelectItem>
+                        <SelectItem value="number">
+                          Number (Quantity/ Duration)
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -119,14 +169,27 @@ function CreateHabitModal() {
                         id="streak"
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        // {...field}
                       />
                     </FormControl>
                     <Label
                       htmlFor="streak"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Streak
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className="bg-foreground"
+                            avoidCollisions={true}
+                            side="right"
+                          >
+                            <p>Shows your current unbroken streak</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </Label>
                   </div>
                   <FormMessage />
@@ -144,14 +207,30 @@ function CreateHabitModal() {
                         id="longestStreak"
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        // {...field}
                       />
                     </FormControl>
                     <label
                       htmlFor="longestStreak"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Longest streak
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className="bg-foreground"
+                            avoidCollisions={true}
+                            side="right"
+                          >
+                            <p>
+                              Displays your longest streak achieved on the
+                              heatmap
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </label>
                   </div>
                   <FormMessage />
@@ -169,14 +248,30 @@ function CreateHabitModal() {
                         id="total"
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        // {...field}
                       />
                     </FormControl>
                     <label
                       htmlFor="total"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Total entries
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon className="h-4 w-4" />
+                          </TooltipTrigger>
+                          <TooltipContent
+                            className="bg-foreground"
+                            avoidCollisions={true}
+                            side="right"
+                          >
+                            <p>
+                              Shows the total number of times you've completed
+                              this habit
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </label>
                   </div>
                   <FormMessage />
@@ -194,38 +289,32 @@ function CreateHabitModal() {
                       <SelectTrigger>
                         <SelectValue placeholder="Select Color" />
                       </SelectTrigger>
-                      <SelectContent>
-                        {colors.map((elem: string) => {
-                          return (
-                            <SelectItem value={elem}>
-                              <div className=" flex items-center justify-between w-24 ">
+                      <SelectContent className="h-48">
+                        <ScrollArea>
+                          {colors.map((elem: string) => (
+                            <SelectItem key={elem} value={elem}>
+                              <div className="flex items-center justify-between w-24 ">
                                 <span>{elem}</span>
                                 <div
-                                  className=" h-4 w-4 rounded-xl"
-                                  style={{
-                                    backgroundColor: elem,
-                                  }}
+                                  className="h-4 w-4 rounded-xl"
+                                  style={{ backgroundColor: elem }}
                                 ></div>
                               </div>
                             </SelectItem>
-                          );
-                        })}
+                          ))}
+                        </ScrollArea>
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  {/* <FormDescription>...</FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className=" w-full">
+            <Button type="submit" className="w-full">
               Create Habit
             </Button>
           </form>
         </Form>
-        {/* <DialogFooter>
-          
-        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

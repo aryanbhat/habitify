@@ -11,12 +11,17 @@ const validColor = [
   "purple",
   "pink",
   "yellow",
+  "teal",
+  "coral",
+  "lime",
+  "skyBlue",
 ] as const;
 
 const colorType = z.enum(validColor);
 
 const habitSchema = z.object({
   title: z.string(),
+  unit: z.string(),
   type: typeSchema,
   streak: z.boolean(),
   longestStreak: z.boolean(),

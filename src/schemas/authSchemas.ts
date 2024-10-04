@@ -8,7 +8,7 @@ async function isUsernameUnique(username: string): Promise<boolean> {
   try {
     const q = query(collection(db, "users"), where("username", "==", username));
     const qSnap = await getDocs(q);
-    return qSnap.empty; // Return true if no matching documents
+    return qSnap.empty; 
   } catch (err) {
     toast.error("An error occurred, Please try again");
     return false;

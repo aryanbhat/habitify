@@ -5,6 +5,8 @@ export type HabitValue = {
   total_entries: boolean;
   value: CalendarValue[];
   color: string;
+  type: string;
+  unit: string;
 };
 
 export type CalendarValue = {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,15 @@ import {
   faClock,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { auth } from "@/firebaseConfig";
 import HabitCalendar from "@/components/HabitCalendar";
+import { useAppDispatch } from "@/hooks/reduxHook";
+import { HabitValue } from "@/Types/type";
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleRedirection = () => {
     dispatch(setNavbarState(2));
@@ -28,6 +29,39 @@ export default function LandingPage() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         navigate("/habits");
+      }
+    });
+
+    // Function to generate dates between start and end
+    function getDates(startDate: Date, endDate: Date) {
+      const dates = [];
+      let currentDate = new Date(startDate);
+      const lastDate = new Date(endDate);
+
+      while (currentDate <= lastDate) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return dates;
+    }
+
+    const allDates2024 = getDates(
+      new Date("2024-01-01"),
+      new Date("2024-12-31")
+    );
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    allDates2024.forEach((date) => {
+      if (date >= today) return;
+      const dateString = date.toISOString().split("T")[0];
+      if (!calendarValue.some((item) => item.day === dateString)) {
+        calendarValue.push({
+          day: dateString,
+          value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 100
+        });
       }
     });
 
@@ -52,25 +86,17 @@ export default function LandingPage() {
     },
   };
 
-  const calendarValue = [
-    { day: "2024-01-01", value: 100 },
-    { day: "2024-03-03", value: 10 },
-    { day: "2024-02-05", value: 50 },
-    { day: "2024-05-07", value: 60 },
-    { day: "2024-05-09", value: 12 },
-    { day: "2024-08-11", value: 20 },
-    { day: "2024-09-13", value: 10 },
-    { day: "2024-12-15", value: 1 },
-    // Add more data points as needed
-  ];
+  const calendarValue = [{ day: "2024-01-01", value: 1 }];
 
-  const calendarData = {
+  const calendarData: HabitValue = {
     title: "Workout",
     longest_streak: true,
     curr_streak: true,
     total_entries: true,
     value: calendarValue,
-    color: "green",
+    color: "coral",
+    type: "checkbox",
+    unit: "hours",
   };
 
   return (

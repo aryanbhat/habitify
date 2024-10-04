@@ -24,30 +24,23 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "@/firebaseConfig";
-import { useDispatch } from "react-redux";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import {
   addDoc,
   collection,
   doc,
-  getDoc,
   getDocs,
   query,
-  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
 import AnimatedComponent from "@/components/AnimatedComponent";
-
-// type checkUserResult = {
-//   uid: string | null;
-//   flag: boolean;
-// };
+import { useAppDispatch } from "@/hooks/reduxHook";
 
 function Login() {
   const googleProvider = new GoogleAuthProvider();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -56,30 +49,6 @@ function Login() {
       password: "",
     },
   });
-
-  // async function checkUserByEmail(
-  //   email: string
-  // ): Promise<checkUserResult | undefined> {
-  //   try {
-  //     const userRef = collection(db, "users");
-  //     const q = query(userRef, where("email", "==", email));
-  //     const querySnapshot = await getDocs(q);
-  //     if (!querySnapshot.empty) {
-  //       console.log(querySnapshot.docs[0].data());
-  //       return {
-  //         uid: querySnapshot.docs[0].data().uid,
-  //         flag: true,
-  //       };
-  //     } else {
-  //       return {
-  //         uid: null,
-  //         flag: false,
-  //       };
-  //     }
-  //   } catch (err) {
-  //     console.error("Error checking user by email:", err);
-  //   }
-  // }
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
@@ -104,7 +73,9 @@ function Login() {
         toast.error("Something is wrong please try again");
       }
     } catch (err) {
-      toast.error(err.message);
+      const message =
+        err instanceof Error ? err.message : "something went wrong";
+      toast.error(message);
       console.log(err);
     }
   }

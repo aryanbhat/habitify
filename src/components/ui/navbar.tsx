@@ -1,17 +1,16 @@
 import { Button } from "./button";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { setUser } from "@/stores/userSlice/userSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const activeIdx = useSelector((state) => state.navbar.activeIdx);
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const activeIdx = useAppSelector((state) => state.navbar.activeIdx);
+  const dispatch = useAppDispatch();
   const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

@@ -6,24 +6,24 @@ export function calculateStreaks(calendarValue: CalendarValue[]) {
   let currentStreak = 0;
   let longestStreak = 0;
 
-  // finding currentStreak
+  // Finding currentStreak
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const yesterday = new Date(today);
+  yesterday.setHours(0, 0, 0, 0);
   yesterday.setDate(today.getDate() - 1);
 
   const newDates = calendarValue
     .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
-    .map((elem) => {
-      return elem.day;
-    });
+    .map((elem) => elem.day);
 
-  //finding the index of yesterday in the newDates array using binarySearch
+  // Finding the index of yesterday in the newDates array using binarySearch
   const idx = binarySearchDates(newDates, formatDate(yesterday));
 
-  //if i get the idx i.e yesterday's date is present there
-  if (idx != -1) {
+  // If we find the idx, meaning yesterday's date is present
+  if (idx !== -1) {
     let tempStreak = 1;
-    for (let i = idx - 1; i > 0; i--) {
+    for (let i = idx - 1; i >= 0; i--) {
       if (
         new Date(newDates[i + 1]).getTime() -
           new Date(newDates[i]).getTime() ===
@@ -37,7 +37,7 @@ export function calculateStreaks(calendarValue: CalendarValue[]) {
     currentStreak = tempStreak;
   }
 
-  //to find the longestStreak
+  // To find the longestStreak
   let tempStreak = 1;
   for (let i = 1; i < newDates.length; i++) {
     if (
@@ -50,6 +50,9 @@ export function calculateStreaks(calendarValue: CalendarValue[]) {
       tempStreak = 1;
     }
   }
+
+  // Update longestStreak for the last streak
+  longestStreak = Math.max(longestStreak, tempStreak);
 
   return {
     totalEntries: calendarValue.length,

@@ -1,9 +1,10 @@
 import AnimatedComponent from "@/components/AnimatedComponent";
+import { RootState } from "@/stores/store";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     console.log(user);

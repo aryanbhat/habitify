@@ -8,7 +8,7 @@ export function formatDate(date: Date): string {
 export function binarySearchDates(dates: string[], key: string) {
   let start = 0;
   let end = dates.length - 1;
-  while (start < end) {
+  while (start <= end) {
     const mid = start + Math.floor((end - start) / 2);
     if (dates[mid] === key) {
       return mid;
