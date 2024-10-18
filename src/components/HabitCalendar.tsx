@@ -17,6 +17,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { Checkbox } from "./ui/checkbox";
+import { formatDate } from "@/utils/formatDate";
 
 interface CalendarData {
   longestStreak: number;
@@ -75,11 +76,18 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           type={data.type}
           setValues={setValues}
           unit={data.unit}
+          values={values}
         />
         <div className="lg:w-[80vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
           <ResponsiveCalendar
             onClick={(date) => {
-              toast.success(date.day);
+              const today = formatDate(new Date());
+              if (date.day > today) {
+                toast.error(
+                  "Oops! You can't select a future date. Please complete today's task first."
+                );
+                return;
+              }
               setCurrentDay(date.day);
               setOpen(true);
             }}
@@ -141,6 +149,7 @@ function ElementDialog({
   setOpen,
   currentDay,
   type,
+  values,
   setValues,
   unit,
 }: {
@@ -148,6 +157,7 @@ function ElementDialog({
   setOpen: React.Dispatch<boolean>;
   currentDay: string | null;
   type: string;
+  values: CalendarValue[];
   setValues: React.Dispatch<CalendarValue[]>;
   unit: string;
 }) {
@@ -155,11 +165,29 @@ function ElementDialog({
   const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
 
   function handleClose() {
-    if (currentDay) {
-      toast.error(currentDay);
-    }
     setValue("");
     setIsChecked(false);
+    setOpen(!open);
+  }
+
+  function handleSave() {
+    if (value === 0 || value === "") {
+      if (type == "number") {
+        toast.error("you have not entered any value.");
+        return;
+      }
+    }
+    if (!isChecked) {
+      toast.error("please check the checkbox");
+      return;
+    }
+    if (currentDay) {
+      const newValue: CalendarValue = {
+        day: currentDay as string,
+        value: value == 0 ? 100 : (value as number),
+      };
+      setValues([...values, newValue]);
+    }
     setOpen(!open);
   }
 
@@ -169,27 +197,30 @@ function ElementDialog({
         <DialogHeader>
           <DialogTitle>Track the day</DialogTitle>
           <DialogDescription>
-            Add the value and mark the checkbox for this day. Click save when
-            you're done.
+            {type == "checkbox"
+              ? "Mark the checkbox for this day. Click save when you're done."
+              : "Add the value and mark the checkbox for this day. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="value" className="text-right flex gap-2">
-              Value
-              <span className=" text-slate-500 ">({unit})</span>
-            </Label>
-            <Input
-              id="value"
-              type="number"
-              value={value}
-              onChange={(e) =>
-                setValue(e.target.value ? parseInt(e.target.value) : "")
-              }
-              className="col-span-3"
-              placeholder="Enter value"
-            />
-          </div>
+          {type == "number" && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="value" className="text-right flex gap-2">
+                Value
+                <span className=" text-slate-500 ">({unit})</span>
+              </Label>
+              <Input
+                id="value"
+                type="number"
+                value={value}
+                onChange={(e) =>
+                  setValue(e.target.value ? parseInt(e.target.value) : "")
+                }
+                className="col-span-3"
+                placeholder="Enter value"
+              />
+            </div>
+          )}
           {/* Checkbox input using Shadcn Checkbox component */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="check" className="text-right">
@@ -205,7 +236,9 @@ function ElementDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Save changes</Button>
+          <Button type="submit" onClick={handleSave}>
+            Save changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -30,17 +30,29 @@ const Habits = () => {
     longest_streak: true,
     curr_streak: true,
     total_entries: true,
-    value: calendarValue,
+    value: calendarValue as CalendarValue[],
     color: "blue",
+    type: "number",
+    unit: "question",
+  };
+
+  const secondData: HabitValue = {
+    title: "Meditation",
+    longest_streak: true,
+    curr_streak: true,
+    total_entries: true,
+    value: [] as CalendarValue[],
+    color: "coral",
     type: "checkbox",
     unit: "question",
   };
 
   return (
     <AnimatedComponent>
-      <div className=" flex flex-col items-center justify-center gap-6">
+      <div className=" flex flex-col items-center justify-center gap-6 mb-4 ">
         <CreateHabitModal />
         <HabitCalendar data={data} />
+        <HabitCalendar data={secondData} />
       </div>
     </AnimatedComponent>
   );
