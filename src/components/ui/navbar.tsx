@@ -50,7 +50,7 @@ export default function Navbar() {
               navigate("/");
             }}
           >
-            How it works
+            Home
           </Button>
           <Button
             variant={"link"}
@@ -59,10 +59,10 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(1));
-              navigate("/");
+              navigate("/support");
             }}
           >
-            Premium
+            Support
           </Button>
           <Button
             variant={"link"}
@@ -98,10 +98,10 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(1));
-              navigate("/profile");
+              navigate("/support");
             }}
           >
-            Profile
+            Support
           </Button>
           <Button
             variant={"link"}
@@ -110,6 +110,18 @@ export default function Navbar() {
             }`}
             onClick={() => {
               dispatch(setNavbarState(2));
+              navigate("/profile");
+            }}
+          >
+            Profile
+          </Button>
+          <Button
+            variant={"link"}
+            className={`text-slate-400 hover:text-slate-100 text-base hover:no-underline ${
+              activeIdx == 3 && "text-slate-100"
+            }`}
+            onClick={() => {
+              dispatch(setNavbarState(3));
               navigate("/settings");
             }}
           >

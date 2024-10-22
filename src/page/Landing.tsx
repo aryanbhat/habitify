@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { auth } from "@/firebaseConfig";
-import HabitCalendar from "@/components/HabitCalendar";
+import HabitCalendar from "@/components/LandingHabitCalendar";
 import { useAppDispatch } from "@/hooks/reduxHook";
 import { HabitValue } from "@/Types/type";
 
@@ -26,6 +26,8 @@ export default function LandingPage() {
   };
 
   useEffect(() => {
+    dispatch(setNavbarState(0));
+
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         navigate("/habits");
@@ -89,13 +91,13 @@ export default function LandingPage() {
   const calendarValue = [{ day: "2024-01-01", value: 1 }];
 
   const calendarData: HabitValue = {
-    title: "Workout",
+    title: "The one thing you always wanted to do",
     longest_streak: true,
     curr_streak: true,
     total_entries: true,
     value: calendarValue,
     color: "coral",
-    type: "checkbox",
+    type: "number",
     unit: "hours",
   };
 
@@ -160,7 +162,7 @@ export default function LandingPage() {
             See Your Progress in Action
           </h2>
           <div className="w-[80vw] ">
-            <div className="w-[85vw]">
+            <div className="w-[81vw]">
               <HabitCalendar data={calendarData} />
             </div>
           </div>

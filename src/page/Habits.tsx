@@ -2,8 +2,18 @@ import CreateHabitModal from "@/components/modal/CreateHabitModal";
 import HabitCalendar from "@/components/HabitCalendar";
 import AnimatedComponent from "@/components/AnimatedComponent";
 import { CalendarValue, HabitValue } from "@/Types/type";
+import { useEffect } from "react";
+
+import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
+import { useAppDispatch } from "@/hooks/reduxHook";
 
 const Habits = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setNavbarState(0));
+  });
+
   // date format is yyyy-mm-dd
   const calendarValue: CalendarValue[] = [
     { value: 1, day: "2024-02-05" },

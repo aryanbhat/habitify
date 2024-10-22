@@ -25,7 +25,15 @@ import { auth, db } from "@/firebaseConfig";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import toast from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { MouseEventHandler } from "react";
@@ -95,25 +103,35 @@ function Register() {
         );
         const user = userCred.user;
         if (user.email) {
-          const docRef = doc(db, "users", user.email);
-          const userSnap = await getDoc(docRef);
-          if (userSnap.exists()) {
-            await setDoc(
-              docRef,
-              {
-                username: user.displayName,
-              },
-              { merge: true }
+          const usersCollection = collection(db, "users");
+          const q = query(usersCollection, where("email", "==", user.email));
+          const userSnap = await getDocs(q);
+
+          if (!userSnap.empty) {
+            const userDoc = userSnap.docs[0];
+            await updateDoc(doc(db, "users", userDoc.id), {
+              username: user.displayName,
+            });
+            dispatch(
+              setUser({
+                uid: userDoc.id,
+              })
             );
           } else {
-            await addDoc(collection(db, "users"), {
+            const newUserRef = await addDoc(collection(db, "users"), {
               email: user.email,
               username: user.displayName,
             });
+            console.log("New user added with ID: ", newUserRef.id);
+            dispatch(
+              setUser({
+                uid: newUserRef.id,
+              })
+            );
           }
         }
         dispatch(setNavbarState(0));
-        toast.success("Login successfull");
+        toast.success("🎉 Login successful! Welcome aboard!");
         navigate("/habits");
       }
     } catch (err) {

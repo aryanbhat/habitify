@@ -40,9 +40,15 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { InfoIcon } from "lucide-react";
+import { useAppSelector } from "@/hooks/reduxHook";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import toast from "react-hot-toast";
 
 function CreateHabitModal() {
   const [open, setOpen] = useState(false);
+
+  const { user } = useAppSelector((state) => state.user);
 
   const form = useForm<z.infer<typeof habitSchema>>({
     resolver: zodResolver(habitSchema),
@@ -62,7 +68,25 @@ function CreateHabitModal() {
       ...values,
       value: [],
     };
-    console.log(newHabit);
+    try {
+      const collectionRef = collection(db, `users/${user.uid}/habits`);
+      const docRef = await addDoc(collectionRef, newHabit);
+      console.log(docRef);
+
+      await setDoc(
+        doc(db, `users/${user.uid}/habits`, docRef.id),
+        {
+          id: docRef.id,
+          ...values,
+          value: [],
+        },
+        { merge: true }
+      );
+    } catch (error) {
+      toast.error("failed to create the habit please try again");
+      console.log(error);
+    }
+
     setOpen(false);
   }
 
@@ -88,7 +112,7 @@ function CreateHabitModal() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-7 flex flex-col"
+            className=" space-y-5 flex flex-col"
           >
             <FormField
               control={form.control}
@@ -154,6 +178,9 @@ function CreateHabitModal() {
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  <FormDescription>
+                    Select how you'll measure this habit.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
