@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import toast from "react-hot-toast";
 import { useAppDispatch } from "@/hooks/reduxHook";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
+import Footer from "@/components/Footer";
 
 export default function SupportPage() {
   const [amount, setAmount] = useState("");
@@ -47,7 +48,7 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground py-2 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <motion.h1
           className="text-4xl font-bold text-center mb-8"
@@ -175,6 +176,7 @@ export default function SupportPage() {
           </Card>
         </motion.section>
       </div>
+      <Footer />
     </div>
   );
 }

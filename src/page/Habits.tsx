@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { useAppDispatch } from "@/hooks/reduxHook";
+import Footer from "@/components/Footer";
 
 const Habits = () => {
   const dispatch = useAppDispatch();
@@ -64,6 +65,7 @@ const Habits = () => {
         <HabitCalendar data={data} />
         <HabitCalendar data={secondData} />
       </div>
+      <Footer />
     </AnimatedComponent>
   );
 };

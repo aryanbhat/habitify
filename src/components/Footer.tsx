@@ -10,7 +10,7 @@ function Footer() {
   }
 
   return (
-    <div className=" w-screen flex items-center justify-center my-3">
+    <div className=" w-screen  flex items-center justify-center my-3">
       Made with <Heart className="  mx-2" /> by{" "}
       <Button
         variant={"link"}

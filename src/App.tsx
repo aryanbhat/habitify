@@ -8,7 +8,6 @@ import Habits from "./page/Habits";
 import Profile from "./page/Profile";
 import Settings from "./page/Settings";
 import SupportPage from "./page/Support";
-import Footer from "./components/Footer";
 
 function App() {
   // const { modal_type } = useSelector((state) => state.modal);
@@ -24,7 +23,6 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/support" element={<SupportPage />} />
       </Routes>
-      <Footer />
     </div>
   );
 }
