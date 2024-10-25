@@ -2,9 +2,24 @@ import { CalendarValue } from "@/Types/type";
 import { binarySearchDates, formatDate } from "./formatDate";
 
 export function calculateStreaks(calendarValue: CalendarValue[]) {
-  const dayDiff = 86400000;
+  const dayDiff = 86400000; // One day in milliseconds
   let currentStreak = 0;
   let longestStreak = 0;
+
+  if (calendarValue.length === 0) {
+    return {
+      totalEntries: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+    };
+  }
+
+  // Create a new array instead of modifying the original
+  const sortedValues = [...calendarValue].sort(
+    (a, b) => new Date(a.day).getTime() - new Date(b.day).getTime()
+  );
+
+  const newDates = sortedValues.map((elem) => elem.day);
 
   // Finding currentStreak
   const today = new Date();
@@ -13,17 +28,18 @@ export function calculateStreaks(calendarValue: CalendarValue[]) {
   yesterday.setHours(0, 0, 0, 0);
   yesterday.setDate(today.getDate() - 1);
 
-  const newDates = calendarValue
-    .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime())
-    .map((elem) => elem.day);
+  // Check for today's entry
+  const todayFormatted = formatDate(today);
+  const hasToday = newDates.includes(todayFormatted);
 
-  // Finding the index of yesterday in the newDates array using binarySearch
   const idx = binarySearchDates(newDates, formatDate(yesterday));
 
-  // If we find the idx, meaning yesterday's date is present
-  if (idx !== -1) {
+  // Calculate current streak
+  if (hasToday || idx !== -1) {
     let tempStreak = 1;
-    for (let i = idx - 1; i >= 0; i--) {
+    const startIdx = hasToday ? newDates.length - 1 : idx;
+
+    for (let i = startIdx - 1; i >= 0; i--) {
       if (
         new Date(newDates[i + 1]).getTime() -
           new Date(newDates[i]).getTime() ===
@@ -37,7 +53,7 @@ export function calculateStreaks(calendarValue: CalendarValue[]) {
     currentStreak = tempStreak;
   }
 
-  // To find the longestStreak
+  // Calculate longest streak
   let tempStreak = 1;
   for (let i = 1; i < newDates.length; i++) {
     if (

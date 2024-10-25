@@ -1,12 +1,13 @@
 export type HabitValue = {
   title: string;
-  longest_streak?: boolean;
-  curr_streak?: boolean;
-  total_entries: boolean;
+  longestStreak?: boolean;
+  streak?: boolean;
+  total: boolean;
   value: CalendarValue[];
   color: string;
   type: string;
   unit: string;
+  id: string;
 };
 
 export type CalendarValue = {

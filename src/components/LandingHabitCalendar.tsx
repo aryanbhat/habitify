@@ -177,21 +177,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
-          {data.longest_streak && (
+          {data.longestStreak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}
               label="Longest Streak"
               value={calendarData.longestStreak}
             />
           )}
-          {data.curr_streak && (
+          {data.streak && (
             <StatCard
               icon={<CalendarIcon className="w-6 h-6" />}
               label="Current Streak"
               value={calendarData.currentStreak}
             />
           )}
-          {data.total_entries && (
+          {data.total && (
             <StatCard
               icon={<BarChartIcon className="w-6 h-6" />}
               label="Total Entries"

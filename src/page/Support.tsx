@@ -176,7 +176,6 @@ export default function SupportPage() {
           </Card>
         </motion.section>
       </div>
-      <Footer />
     </div>
   );
 }

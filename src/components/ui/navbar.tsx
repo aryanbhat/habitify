@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebaseConfig";
+import { auth, db } from "@/firebaseConfig";
 import { setUser } from "@/stores/userSlice/userSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
+import { collection, query, where } from "firebase/firestore";
+import { getUserDetails } from "@/utils/getUserDataDb";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -13,13 +15,13 @@ export default function Navbar() {
   const dispatch = useAppDispatch();
   const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log(user);
+        const id = await getUserDetails({ email: user.email as string });
         const userData = {
           username: user?.displayName,
           email: user?.email,
-          uid: user?.uid,
+          uid: id,
           profile: user?.photoURL,
         };
         dispatch(setUser(userData));

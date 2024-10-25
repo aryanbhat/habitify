@@ -40,25 +40,25 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { InfoIcon } from "lucide-react";
-import { useAppSelector } from "@/hooks/reduxHook";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import toast from "react-hot-toast";
+import { fetchHabitsList } from "@/stores/habitSlice/habitSlice";
 
 function CreateHabitModal() {
   const [open, setOpen] = useState(false);
-
+  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
-
   const form = useForm<z.infer<typeof habitSchema>>({
     resolver: zodResolver(habitSchema),
     defaultValues: {
       title: "",
-      type: "checkbox",
+      type: "number",
       streak: true,
       longestStreak: false,
       total: false,
-      color: "coral",
+      color: "green",
       unit: "",
     },
   });
@@ -77,11 +77,12 @@ function CreateHabitModal() {
         doc(db, `users/${user.uid}/habits`, docRef.id),
         {
           id: docRef.id,
-          ...values,
-          value: [],
         },
         { merge: true }
       );
+      if (user.uid) {
+        dispatch(fetchHabitsList(user.uid));
+      }
     } catch (error) {
       toast.error("failed to create the habit please try again");
       console.log(error);
@@ -135,28 +136,7 @@ function CreateHabitModal() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="unit"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Measurement Unit</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="e.g, minutes, pages, times"
-                      required
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Specify the unit you'll use to measure (e.g minutes
-                    meditated)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="type"
@@ -180,6 +160,28 @@ function CreateHabitModal() {
                   </FormControl>
                   <FormDescription>
                     Select how you'll measure this habit.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="unit"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Measurement Unit</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="e.g, minutes, pages, times"
+                      required
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Specify the unit you'll use to measure (e.g minutes
+                    meditated)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

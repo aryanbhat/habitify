@@ -93,13 +93,14 @@ export default function LandingPage() {
 
   const calendarData: HabitValue = {
     title: "The one thing you always wanted to do",
-    longest_streak: true,
-    curr_streak: true,
-    total_entries: true,
+    longestStreak: true,
+    streak: true,
+    total: true,
     value: calendarValue,
     color: "coral",
     type: "number",
     unit: "hours",
+    id: "asdfiw12323",
   };
 
   return (
@@ -215,7 +216,6 @@ export default function LandingPage() {
           </Button>
         </motion.div>
       </motion.div>
-      <Footer />
     </div>
   );
 }

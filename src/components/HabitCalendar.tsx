@@ -18,6 +18,10 @@ import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { Checkbox } from "./ui/checkbox";
 import { formatDate } from "@/utils/formatDate";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/firebaseConfig";
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
+import { updateValue } from "@/stores/habitSlice/habitSlice";
 
 interface CalendarData {
   longestStreak: number;
@@ -65,10 +69,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     },
   };
 
+  function handleTodayLog() {
+    const today = formatDate(new Date());
+    setCurrentDay(today);
+    setOpen(true);
+  }
+
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">{data.title}</h2>
+        <div className=" flex justify-between items-center mx-5">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            {data.title}
+          </h2>
+          <Button onClick={handleTodayLog}>Log Today</Button>
+        </div>{" "}
         <ElementDialog
           open={open}
           setOpen={setOpen}
@@ -77,8 +92,9 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           setValues={setValues}
           unit={data.unit}
           values={values}
+          id={data.id}
         />
-        <div className="lg:w-[80vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
+        <div className="lg:w-[90vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
           <ResponsiveCalendar
             onClick={(date) => {
               const today = formatDate(new Date());
@@ -117,21 +133,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
-          {data.longest_streak && (
+          {data.longestStreak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}
               label="Longest Streak"
               value={calendarData.longestStreak}
             />
           )}
-          {data.curr_streak && (
+          {data.streak && (
             <StatCard
               icon={<CalendarIcon className="w-6 h-6" />}
               label="Current Streak"
               value={calendarData.currentStreak}
             />
           )}
-          {data.total_entries && (
+          {data.total && (
             <StatCard
               icon={<BarChartIcon className="w-6 h-6" />}
               label="Total Entries"
@@ -152,6 +168,7 @@ function ElementDialog({
   values,
   setValues,
   unit,
+  id,
 }: {
   open: boolean;
   setOpen: React.Dispatch<boolean>;
@@ -160,9 +177,12 @@ function ElementDialog({
   values: CalendarValue[];
   setValues: React.Dispatch<CalendarValue[]>;
   unit: string;
+  id: string;
 }) {
+  const dispatch = useAppDispatch();
   const [value, setValue] = useState<number | "">(0); // State for numeric input
   const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
+  const { user } = useAppSelector((state) => state.user);
 
   function handleClose() {
     setValue("");
@@ -170,7 +190,7 @@ function ElementDialog({
     setOpen(!open);
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (value === 0 || value === "") {
       if (type == "number") {
         toast.error("you have not entered any value.");
@@ -186,8 +206,32 @@ function ElementDialog({
         day: currentDay as string,
         value: value == 0 ? 100 : (value as number),
       };
-      setValues([...values, newValue]);
+      try {
+        await setDoc(
+          doc(db, `users/${user.uid}/habits`, id),
+          {
+            value: [...values, newValue],
+          },
+          {
+            merge: true,
+          }
+        );
+        setValues([...values, newValue]);
+        dispatch(
+          updateValue({
+            habitId: id,
+            day: currentDay,
+            value,
+          })
+        );
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "something went wrong";
+        toast.error(errorMessage);
+      }
     }
+    setValue("");
+    setIsChecked(false);
     setOpen(!open);
   }
 
