@@ -71,13 +71,13 @@ export const habitSlice = createSlice({
     builder
       .addCase(fetchHabitsList.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        // state.error = null;
       })
       .addCase(fetchHabitsList.fulfilled, (state, { payload }) => {
         if (payload) {
           state.isLoading = false;
           state.data = payload;
-          state.error = null;
+          // state.error = null;
         }
       })
       .addCase(fetchHabitsList.rejected, (state, action) => {
