@@ -8,11 +8,13 @@ import Habits from "./page/Habits";
 import Profile from "./page/Profile";
 import Settings from "./page/Settings";
 import SupportPage from "./page/Support";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   // const { modal_type } = useSelector((state) => state.modal);
   return (
     <div className=" w-screen flex flex-col justify-center items-center max-w-7xl mx-auto">
+      <Analytics />
       <Navbar />
       <Routes>
         <Route path="/" element={<Landing />} />
