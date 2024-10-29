@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,13 @@ import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { auth } from "@/firebaseConfig";
 import HabitCalendar from "@/components/LandingHabitCalendar";
 import { useAppDispatch } from "@/hooks/reduxHook";
-import { HabitValue } from "@/Types/type";
+import { CalendarValue, HabitValue } from "@/Types/type";
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  const [calendarValue, setCalendarValue] = useState<CalendarValue[]>([]);
 
   const handleRedirection = () => {
     dispatch(setNavbarState(2));
@@ -56,19 +58,27 @@ export default function LandingPage() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const updatedCalendarValue: CalendarValue[] = [
+      { day: "2024-01-20", value: 10 },
+    ];
+
     allDates2024.forEach((date) => {
       if (date >= today) return;
       const dateString = date.toISOString().split("T")[0];
-      if (!calendarValue.some((item) => item.day === dateString)) {
-        calendarValue.push({
+      if (!updatedCalendarValue.some((item) => item.day === dateString)) {
+        updatedCalendarValue.push({
           day: dateString,
           value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 100
         });
       }
     });
 
+    console.log(updatedCalendarValue);
+
+    setCalendarValue(updatedCalendarValue);
+
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -88,14 +98,14 @@ export default function LandingPage() {
     },
   };
 
-  const calendarValue = [{ day: "2024-01-01", value: 1 }];
+  // const calendarValue = [{ day: "2024-01-01", value: 1 }];
 
   const calendarData: HabitValue = {
     title: "The one thing you always wanted to do",
     longestStreak: true,
     streak: true,
     total: true,
-    value: calendarValue,
+    value: calendarValue as CalendarValue[],
     color: "coral",
     type: "number",
     unit: "hours",
@@ -158,16 +168,18 @@ export default function LandingPage() {
           />
         </motion.div>
 
-        <motion.div className="mb-16 " variants={itemVariants}>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-            See Your Progress in Action
-          </h2>
-          <div className="w-[80vw] ">
-            <div className="w-[81vw]">
-              <HabitCalendar data={calendarData} />
+        {calendarValue.length > 0 && (
+          <motion.div className="mb-16 " variants={itemVariants}>
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+              See Your Progress in Action
+            </h2>
+            <div className="w-[80vw] ">
+              <div className="w-[81vw]">
+                <HabitCalendar data={calendarData} />
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         <motion.div className="mb-16" variants={itemVariants}>
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
