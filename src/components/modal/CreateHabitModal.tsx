@@ -50,6 +50,8 @@ function CreateHabitModal() {
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
+  const { data } = useAppSelector((state) => state.habits);
+
   const form = useForm<z.infer<typeof habitSchema>>({
     resolver: zodResolver(habitSchema),
     defaultValues: {
@@ -68,6 +70,15 @@ function CreateHabitModal() {
       ...values,
       value: [],
     };
+
+    const isPresent = data?.find((elem) => elem.title === values.title);
+    if (isPresent) {
+      toast.error(
+        "No duplicate habits can be created, please change the title"
+      );
+      return;
+    }
+
     try {
       const collectionRef = collection(db, `users/${user.uid}/habits`);
       const docRef = await addDoc(collectionRef, newHabit);
@@ -82,11 +93,11 @@ function CreateHabitModal() {
       if (user.uid) {
         dispatch(fetchHabitsList(user.uid));
       }
+      form.reset();
     } catch (error) {
       toast.error("failed to create the habit please try again");
       console.log(error);
     }
-
     setOpen(false);
   }
 
@@ -143,7 +154,11 @@ function CreateHabitModal() {
                 <FormItem className="flex flex-col">
                   <FormLabel>Tracking Type</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      required
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -315,7 +330,11 @@ function CreateHabitModal() {
                 <FormItem>
                   <FormLabel>Add Color(s)</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      required
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select Color" />
                       </SelectTrigger>

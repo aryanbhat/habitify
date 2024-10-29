@@ -31,7 +31,7 @@ export default function Habits() {
   return (
     <AnimatedComponent>
       <div className="flex flex-col items-center justify-center gap-6 mb-4 p-4 w-[90vw]">
-        <CreateHabitModal />
+        {data && data?.length <= 5 && <CreateHabitModal />}
 
         {!showContent || isLoading ? (
           <div className="w-full flex justify-center items-center">
