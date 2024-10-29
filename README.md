@@ -15,6 +15,7 @@ This project is a landing page for a habit-tracking web application designed to 
 
 - **React**: JavaScript library for building the user interface.
 - **React Router**: For managing navigation and page redirects.
+- **React Redux**: State management library for managing application state.
 - **Framer Motion**: Animation library used to add motion effects to various elements.
 - **Font Awesome**: Icon library used for feature icons on the page.
 - **Firebase**: Utilized for authentication to check and manage user login state.
