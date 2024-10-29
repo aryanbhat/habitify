@@ -72,9 +72,6 @@ export default function LandingPage() {
         });
       }
     });
-
-    console.log(updatedCalendarValue);
-
     setCalendarValue(updatedCalendarValue);
 
     return () => unsubscribe();
