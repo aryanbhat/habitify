@@ -35,6 +35,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
   const [currentDay, setCurrentDay] = useState<string | null>("");
+  const [currValue, setCurrValue] = useState(0);
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -93,44 +94,55 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           unit={data.unit}
           values={values}
           id={data.id}
+          currValue={currValue}
         />
-        <div className="lg:w-[90vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
-          <ResponsiveCalendar
-            onClick={(date) => {
-              const today = formatDate(new Date());
-              if (date.day > today) {
-                toast.error(
-                  "Oops! You can't select a future date. Please complete today's task first."
+        <div className=" w-full overflow-x-auto">
+          <div className="min-w-[1000px] h-[40vh]">
+            <ResponsiveCalendar
+              onClick={(date) => {
+                const today = formatDate(new Date());
+                if (date.day > today) {
+                  toast.error(
+                    "Oops! You can't select a future date. Please complete today's task first."
+                  );
+                  return;
+                }
+                const isPresent = values.find(
+                  (value) => value.day === date.day
                 );
-                return;
-              }
-              setCurrentDay(date.day);
-              setOpen(true);
-            }}
-            data={values}
-            from="2024-01-01"
-            theme={theme}
-            to="2024-12-31"
-            emptyColor="#131D33"
-            colors={colorsPallete[data.color as keyof typeof colorsPallete]}
-            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-            yearSpacing={40}
-            monthBorderColor="#020817"
-            dayBorderWidth={2}
-            dayBorderColor="#020817"
-            legends={[
-              {
-                anchor: "bottom-right",
-                direction: "row",
-                translateY: 36,
-                itemCount: 4,
-                itemWidth: 42,
-                itemHeight: 36,
-                itemsSpacing: 14,
-                itemDirection: "right-to-left",
-              },
-            ]}
-          />
+                if (isPresent) {
+                  setCurrValue(isPresent.value);
+                } else {
+                  setCurrValue(0);
+                }
+                setCurrentDay(date.day);
+                setOpen(true);
+              }}
+              data={values}
+              from={`${new Date().getFullYear()}-01-01`}
+              theme={theme}
+              to={`${new Date().getFullYear()}-12-31`}
+              emptyColor="#131D33"
+              colors={colorsPallete[data.color as keyof typeof colorsPallete]}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              yearSpacing={40}
+              monthBorderColor="#020817"
+              dayBorderWidth={2}
+              dayBorderColor="#020817"
+              legends={[
+                {
+                  anchor: "bottom-right",
+                  direction: "row",
+                  translateY: 36,
+                  itemCount: 4,
+                  itemWidth: 42,
+                  itemHeight: 36,
+                  itemsSpacing: 14,
+                  itemDirection: "right-to-left",
+                },
+              ]}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (
@@ -169,6 +181,7 @@ function ElementDialog({
   setValues,
   unit,
   id,
+  currValue,
 }: {
   open: boolean;
   setOpen: React.Dispatch<boolean>;
@@ -178,16 +191,21 @@ function ElementDialog({
   setValues: React.Dispatch<CalendarValue[]>;
   unit: string;
   id: string;
+  currValue: number;
 }) {
   const dispatch = useAppDispatch();
-  const [value, setValue] = useState<number | "">(0); // State for numeric input
+  const [value, setValue] = useState<number | "">(currValue); // State for numeric input
   const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
   const { user } = useAppSelector((state) => state.user);
 
+  useEffect(() => {
+    setValue(currValue);
+  }, [currValue]);
+
   function handleClose() {
-    setValue("");
     setIsChecked(false);
     setOpen(!open);
+    setValue(currValue);
   }
 
   async function handleSave() {
@@ -201,22 +219,34 @@ function ElementDialog({
       toast.error("please check the checkbox");
       return;
     }
+
     if (currentDay) {
-      const newValue: CalendarValue = {
-        day: currentDay as string,
-        value: value == 0 ? 100 : (value as number),
-      };
+      let check = false;
+      const updatedValue = values.map((item: CalendarValue) => {
+        if (item.day === currentDay) {
+          check = true;
+          return { ...item, value: value as number };
+        }
+        return item;
+      });
+
+      if (!check) {
+        updatedValue.push({
+          day: currentDay as string,
+          value: value == 0 ? 100 : (value as number),
+        } as CalendarValue);
+      }
       try {
         await setDoc(
           doc(db, `users/${user.uid}/habits`, id),
           {
-            value: [...values, newValue],
+            value: updatedValue,
           },
           {
             merge: true,
           }
         );
-        setValues([...values, newValue]);
+        setValues(updatedValue);
         dispatch(
           updateValue({
             habitId: id,
@@ -230,9 +260,9 @@ function ElementDialog({
         toast.error(errorMessage);
       }
     }
-    setValue("");
-    setIsChecked(false);
     setOpen(!open);
+    setValue(currValue);
+    setIsChecked(false);
   }
 
   return (

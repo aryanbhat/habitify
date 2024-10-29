@@ -71,7 +71,6 @@ function CreateHabitModal() {
     try {
       const collectionRef = collection(db, `users/${user.uid}/habits`);
       const docRef = await addDoc(collectionRef, newHabit);
-      console.log(docRef);
 
       await setDoc(
         doc(db, `users/${user.uid}/habits`, docRef.id),
@@ -165,28 +164,30 @@ function CreateHabitModal() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="unit"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Measurement Unit</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="e.g, minutes, pages, times"
-                      required
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Specify the unit you'll use to measure (e.g minutes
-                    meditated)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {form.watch("type") === "number" && (
+              <FormField
+                control={form.control}
+                name="unit"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Measurement Unit</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="e.g, minutes, pages, times"
+                        required
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Specify the unit you'll use to measure (e.g minutes
+                      meditated)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="streak"

@@ -1,7 +1,7 @@
 import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { colors, colorsPallete } from "@/constants/habitColor";
 import { calculateStreaks } from "@/utils/calculateStreak";
 import {
@@ -35,7 +35,6 @@ interface CalendarData {
 
 export default function HabitCalendar(props: { data: HabitValue }) {
   const data: HabitValue = props.data;
-
   const [open, setOpen] = useState(false);
   const [colorValue, setColorValue] = useState(data.color);
   const [values, setValues] = useState(data.value);
@@ -45,16 +44,12 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     currentStreak: 0,
     totalEntries: 0,
   });
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const { totalEntries, currentStreak, longestStreak } =
       calculateStreaks(values);
-
-    setCalendarData({
-      totalEntries,
-      currentStreak,
-      longestStreak,
-    });
+    setCalendarData({ totalEntries, currentStreak, longestStreak });
   }, [values]);
 
   const theme = {
@@ -87,21 +82,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   }
 
   return (
-    <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
+    <div className="bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="p-6 space-y-6">
-        <div className=" w-full flex justify-between">
-          <h2 className="text-2xl  font-semibold tracking-tight">
+        <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="  text-2xl font-semibold tracking-tight text-center">
             {data.title}{" "}
-            <span className=" underline" style={{ color: colorValue }}>
+            <span className="underline" style={{ color: colorValue }}>
               CONSISTENTLY
             </span>
           </h2>
-          <div className=" w-60 flex flex-col justify-center items-center gap-4">
-            <p className=" text-md text-slate-300">
+          <div className="w-full sm:w-60 flex flex-col justify-center items-center gap-4">
+            <p className="text-md text-slate-300">
               Customise your graph from here
             </p>
             <Select onValueChange={handleSelectChange} value={colorValue}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Color" />
               </SelectTrigger>
               <SelectContent className="h-48">
@@ -110,12 +105,10 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                     <SelectItem
                       key={elem}
                       value={elem}
-                      onMouseEnter={() => {
-                        handleMouseEnter(elem);
-                      }}
+                      onMouseEnter={() => handleMouseEnter(elem)}
                       onMouseLeave={handleMouseLeave}
                     >
-                      <div className="flex items-center justify-between w-24 ">
+                      <div className="flex items-center justify-between w-24">
                         <span>{elem}</span>
                         <div
                           className="h-4 w-4 rounded-xl"
@@ -138,45 +131,47 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           unit={data.unit}
           values={values}
         />
-        <div className="lg:w-[80vw] h-[40vh] w-screen bg-card-background bg-card cursor-pointer">
-          <ResponsiveCalendar
-            onClick={(date) => {
-              const today = formatDate(new Date());
-              if (date.day > today) {
-                toast.error(
-                  "Oops! You can't select a future date. Please complete today's task first."
-                );
-                return;
-              }
-              setCurrentDay(date.day);
-              setOpen(true);
-            }}
-            data={values}
-            from="2024-01-01"
-            theme={theme}
-            to="2024-12-31"
-            emptyColor="#131D33"
-            colors={colorsPallete[colorValue as keyof typeof colorsPallete]}
-            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-            yearSpacing={40}
-            monthBorderColor="#020817"
-            dayBorderWidth={2}
-            dayBorderColor="#020817"
-            legends={[
-              {
-                anchor: "bottom-right",
-                direction: "row",
-                translateY: 36,
-                itemCount: 4,
-                itemWidth: 42,
-                itemHeight: 36,
-                itemsSpacing: 14,
-                itemDirection: "right-to-left",
-              },
-            ]}
-          />
+        <div className="w-full overflow-x-auto" ref={calendarRef}>
+          <div className="min-w-[1000px] h-[40vh]">
+            <ResponsiveCalendar
+              onClick={(date) => {
+                const today = formatDate(new Date());
+                if (date.day > today) {
+                  toast.error(
+                    "Oops! You can't select a future date. Please complete today's task first."
+                  );
+                  return;
+                }
+                setCurrentDay(date.day);
+                setOpen(true);
+              }}
+              data={values}
+              from={`${new Date().getFullYear()}-01-01`}
+              theme={theme}
+              to={`${new Date().getFullYear()}-12-31`}
+              emptyColor="#131D33"
+              colors={colorsPallete[colorValue as keyof typeof colorsPallete]}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              yearSpacing={40}
+              monthBorderColor="#020817"
+              dayBorderWidth={2}
+              dayBorderColor="#020817"
+              legends={[
+                {
+                  anchor: "bottom-right",
+                  direction: "row",
+                  translateY: 36,
+                  itemCount: 4,
+                  itemWidth: 42,
+                  itemHeight: 36,
+                  itemsSpacing: 14,
+                  itemDirection: "right-to-left",
+                },
+              ]}
+            />
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {data.longestStreak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}

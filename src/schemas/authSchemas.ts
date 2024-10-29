@@ -8,7 +8,7 @@ async function isUsernameUnique(username: string): Promise<boolean> {
   try {
     const q = query(collection(db, "users"), where("username", "==", username));
     const qSnap = await getDocs(q);
-    return qSnap.empty; 
+    return qSnap.empty;
   } catch (err) {
     toast.error("An error occurred, Please try again");
     return false;
@@ -47,7 +47,6 @@ const registerSchema = z
 // Preprocess function to handle async validation
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function preprocessRegisterData(data: any) {
-  console.log("data", data);
   if (typeof data.username === "string") {
     const isUnique = await isUsernameUnique(data.username);
     if (!isUnique) {

@@ -15,7 +15,6 @@ import { auth } from "@/firebaseConfig";
 import HabitCalendar from "@/components/LandingHabitCalendar";
 import { useAppDispatch } from "@/hooks/reduxHook";
 import { HabitValue } from "@/Types/type";
-import Footer from "@/components/Footer";
 
 export default function LandingPage() {
   const navigate = useNavigate();

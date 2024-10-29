@@ -113,7 +113,7 @@ function Login() {
               email: user.email,
               username: user.displayName,
             });
-            console.log("New user added with ID: ", newUserRef.id);
+
             dispatch(
               setUser({
                 uid: newUserRef.id,

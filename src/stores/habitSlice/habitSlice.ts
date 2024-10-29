@@ -26,8 +26,6 @@ export const fetchHabitsList = createAsyncThunk(
         };
         habitArr.push(newHabitObj);
       });
-
-      console.log(habitArr);
       return habitArr;
     } catch (error) {
       const errorMsg =

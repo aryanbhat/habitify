@@ -65,7 +65,6 @@ function Register() {
         await updateProfile(userCred.user, {
           displayName: values?.username,
         });
-        console.log(userCred.user);
         await addDoc(collection(db, "users"), {
           email: values?.email,
           username: values?.username,
@@ -122,7 +121,6 @@ function Register() {
               email: user.email,
               username: user.displayName,
             });
-            console.log("New user added with ID: ", newUserRef.id);
             dispatch(
               setUser({
                 uid: newUserRef.id,
