@@ -137,7 +137,7 @@ function CreateHabitModal() {
       <DialogTrigger asChild>
         <Button>Create a Habit</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] overflow-y-scroll max-h-screen">
         <DialogHeader>
           <DialogTitle>Create a Habit</DialogTitle>
           <DialogDescription>
