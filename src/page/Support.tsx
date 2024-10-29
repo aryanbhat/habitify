@@ -17,7 +17,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import toast from "react-hot-toast";
 import { useAppDispatch } from "@/hooks/reduxHook";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
-import Footer from "@/components/Footer";
 
 export default function SupportPage() {
   const [amount, setAmount] = useState("");
