@@ -198,6 +198,7 @@ function ElementDialog({
   const [value, setValue] = useState<number | "">(currValue); // State for numeric input
   const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
   const { user } = useAppSelector((state) => state.user);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setValue(currValue);
@@ -231,6 +232,8 @@ function ElementDialog({
       toast.error("please check the checkbox", { id: "HabitCalendar" });
       return;
     }
+
+    setLoading(true);
 
     if (currentDay) {
       let check = false;
@@ -272,6 +275,7 @@ function ElementDialog({
         toast.error(errorMessage, { id: "HabitCalendar" });
       }
     }
+    setLoading(false);
     setOpen(!open);
     setValue(currValue);
     setIsChecked(false);
@@ -322,8 +326,8 @@ function ElementDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSave}>
-            Save changes
+          <Button type="submit" onClick={handleSave} disabled={loading}>
+            {loading ? "Loading..." : "Save changes"}
           </Button>
         </DialogFooter>
       </DialogContent>
