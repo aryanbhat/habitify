@@ -10,7 +10,9 @@ async function isUsernameUnique(username: string): Promise<boolean> {
     const qSnap = await getDocs(q);
     return qSnap.empty;
   } catch (err) {
-    toast.error("An error occurred, Please try again");
+    toast.error("An error occurred, Please try again", {
+      id: "authSchema",
+    });
     return false;
   }
 }
@@ -50,7 +52,9 @@ async function preprocessRegisterData(data: any) {
   if (typeof data.username === "string") {
     const isUnique = await isUsernameUnique(data.username);
     if (!isUnique) {
-      // toast.error("Username is already taken");
+      toast.error("Username is already taken", {
+        id: "Support",
+      });
     }
   }
   return data;

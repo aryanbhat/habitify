@@ -75,19 +75,26 @@ function CreateHabitModal() {
     const { title, unit, type } = values;
 
     if (title.trim() === "") {
-      toast.error("please enter a valid title");
+      toast.error("please enter a valid title", {
+        id: "createHabitModal",
+      });
       return;
     }
 
     if (unit.trim() === "" && type !== "checkbox") {
-      toast.error("please enter a valid unit");
+      toast.error("please enter a valid unit", {
+        id: "createHabitModal",
+      });
       return;
     }
 
     const isPresent = data?.find((elem) => elem.title === values.title);
     if (isPresent) {
       toast.error(
-        "No duplicate habits can be created, please change the title"
+        "No duplicate habits can be created, please change the title",
+        {
+          id: "createHabitModal",
+        }
       );
       return;
     }
@@ -109,7 +116,9 @@ function CreateHabitModal() {
       }
       form.reset();
     } catch (error) {
-      toast.error("failed to create the habit please try again");
+      toast.error("failed to create the habit please try again", {
+        id: "createHabitModal",
+      });
       console.log(error);
     }
     setLoading(false);

@@ -103,7 +103,8 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                 const today = formatDate(new Date());
                 if (date.day > today) {
                   toast.error(
-                    "Oops! You can't select a future date. Please complete today's task first."
+                    "Oops! You can't select a future date. Please complete today's task first.",
+                    { id: "HabitCalendar" }
                   );
                   return;
                 }
@@ -211,12 +212,23 @@ function ElementDialog({
   async function handleSave() {
     if (value === 0 || value === "") {
       if (type == "number") {
-        toast.error("you have not entered any value.");
+        toast.error("you have not entered any value.", { id: "HabitCalendar" });
         return;
       }
     }
+
+    if (typeof value === "number" && value <= 0) {
+      toast.error("Please enter valid value", { id: "HabitCalendar" });
+      return;
+    }
+
+    if (typeof value === "string" && value <= "0") {
+      toast.error("Please enter a valid value", { id: "HabitCalendar" });
+      return;
+    }
+
     if (!isChecked) {
-      toast.error("please check the checkbox");
+      toast.error("please check the checkbox", { id: "HabitCalendar" });
       return;
     }
 
@@ -257,7 +269,7 @@ function ElementDialog({
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "something went wrong";
-        toast.error(errorMessage);
+        toast.error(errorMessage, { id: "HabitCalendar" });
       }
     }
     setOpen(!open);

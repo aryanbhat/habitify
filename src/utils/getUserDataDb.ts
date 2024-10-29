@@ -15,7 +15,9 @@ export async function getUserDetails({ email }: { email: string }) {
     });
     return docData;
   } catch (error) {
-    toast.error("please logout and try again");
+    toast.error("please logout and try again", {
+      id: "getUserFromDb",
+    });
     console.error(error);
     return null;
   }

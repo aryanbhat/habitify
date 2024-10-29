@@ -138,7 +138,10 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                 const today = formatDate(new Date());
                 if (date.day > today) {
                   toast.error(
-                    "Oops! You can't select a future date. Please complete today's task first."
+                    "Oops! You can't select a future date. Please complete today's task first.",
+                    {
+                      id: "LandingHabitCalendar",
+                    }
                   );
                   return;
                 }
@@ -228,12 +231,16 @@ function ElementDialog({
   function handleSave() {
     if (value === 0 || value === "") {
       if (type == "number") {
-        toast.error("you have not entered any value.");
+        toast.error("you have not entered any value.", {
+          id: "LandingHabitCalendar",
+        });
         return;
       }
     }
     if (!isChecked) {
-      toast.error("please check the checkbox");
+      toast.error("please check the checkbox", {
+        id: "LandingHabitCalendar",
+      });
       return;
     }
     if (currentDay) {

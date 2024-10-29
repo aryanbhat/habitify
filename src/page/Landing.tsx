@@ -51,8 +51,8 @@ export default function LandingPage() {
     }
 
     const allDates2024 = getDates(
-      new Date("2024-01-01"),
-      new Date("2024-12-31")
+      new Date(`${new Date().getFullYear()}-01-01`),
+      new Date(`${new Date().getFullYear()}-12-31`)
     );
 
     const today = new Date();

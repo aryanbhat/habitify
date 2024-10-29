@@ -35,12 +35,16 @@ export default function Settings() {
   async function handleLogout() {
     try {
       await signOut(auth);
-      toast.success("You are logged out");
+      toast.success("You are logged out", {
+        id: "Settings",
+      });
       dispatch(resetUser());
       dispatch(resetNavbarState());
       navigate("/");
     } catch (err) {
-      toast.error((err as Error).message || "Something went wrong");
+      toast.error((err as Error).message || "Something went wrong", {
+        id: "Settings",
+      });
     }
   }
 

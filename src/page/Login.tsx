@@ -67,15 +67,21 @@ function Login() {
           })
         );
         dispatch(setNavbarState(0));
-        toast.success("Login successfull");
+        toast.success("Login successfull", {
+          id: "login",
+        });
         navigate("/habits");
       } else {
-        toast.error("Something is wrong please try again");
+        toast.error("Something is wrong please try again", {
+          id: "login",
+        });
       }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "something went wrong";
-      toast.error(message);
+      toast.error(message, {
+        id: "login",
+      });
       console.log(err);
     }
   }
@@ -122,11 +128,15 @@ function Login() {
           }
         }
         dispatch(setNavbarState(0));
-        toast.success("🎉 Login successful! Welcome aboard!");
+        toast.success("🎉 Login successful! Welcome aboard!", {
+          id: "login",
+        });
         navigate("/habits");
       }
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        id: "login",
+      });
       console.log(err);
     }
   };

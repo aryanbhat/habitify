@@ -77,14 +77,18 @@ function Register() {
             profile: userCred?.user?.photoURL,
           })
         );
-        toast.success("🎉 Signup successful! Welcome aboard!");
+        toast.success("🎉 Signup successful! Welcome aboard!", {
+          id: "register",
+        });
         navigate("/habits");
         dispatch(setNavbarState(0));
       }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "something went wrong";
-      toast.error(message);
+      toast.error(message, {
+        id: "register",
+      });
     }
   }
 
@@ -129,11 +133,15 @@ function Register() {
           }
         }
         dispatch(setNavbarState(0));
-        toast.success("🎉 Login successful! Welcome aboard!");
+        toast.success("🎉 Login successful! Welcome aboard!", {
+          id: "register",
+        });
         navigate("/habits");
       }
     } catch (err) {
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        id: "register",
+      });
       console.log(err);
     }
   };

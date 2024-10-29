@@ -33,7 +33,10 @@ export default function SupportPage() {
     e.preventDefault();
     // Here you would integrate with a payment processor
     toast.success(
-      `Thank you for being so kind for dontaing ${amount} $, I have no paywall added right now`
+      `Thank you for being so kind for dontaing ${amount} $, I have no paywall added right now`,
+      {
+        id: "Support",
+      }
     );
     setAmount("");
   };
@@ -41,7 +44,9 @@ export default function SupportPage() {
   const handleFeedback = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would handle the feedback submission
-    toast.success("feedback submitted");
+    toast.success("feedback submitted", {
+      id: "Support",
+    });
     setFeedback("");
     setFeedbackType("suggestion");
   };
