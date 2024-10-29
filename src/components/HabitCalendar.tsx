@@ -144,7 +144,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
+        <div className="flex md:flex-col justify-center items-center gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}
@@ -329,7 +329,7 @@ function StatCard({
   value: number;
 }) {
   return (
-    <div className="flex items-center space-x-4 p-4 bg-card-background rounded-xl transition-all duration-300 hover:bg-primary/10 group ">
+    <div className="flex items-center space-x-4 p-4 bg-card-background rounded-xl transition-all duration-300 hover:bg-primary/10 group min-w-96 ">
       <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
         {icon}
       </div>

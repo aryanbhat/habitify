@@ -51,6 +51,7 @@ function CreateHabitModal() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
   const { data } = useAppSelector((state) => state.habits);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof habitSchema>>({
     resolver: zodResolver(habitSchema),
@@ -58,8 +59,8 @@ function CreateHabitModal() {
       title: "",
       type: "number",
       streak: true,
-      longestStreak: false,
-      total: false,
+      longestStreak: true,
+      total: true,
       color: "green",
       unit: "",
     },
@@ -71,6 +72,18 @@ function CreateHabitModal() {
       value: [],
     };
 
+    const { title, unit, type } = values;
+
+    if (title.trim() === "") {
+      toast.error("please enter a valid title");
+      return;
+    }
+
+    if (unit.trim() === "" && type !== "checkbox") {
+      toast.error("please enter a valid unit");
+      return;
+    }
+
     const isPresent = data?.find((elem) => elem.title === values.title);
     if (isPresent) {
       toast.error(
@@ -80,6 +93,7 @@ function CreateHabitModal() {
     }
 
     try {
+      setLoading(true);
       const collectionRef = collection(db, `users/${user.uid}/habits`);
       const docRef = await addDoc(collectionRef, newHabit);
 
@@ -98,6 +112,7 @@ function CreateHabitModal() {
       toast.error("failed to create the habit please try again");
       console.log(error);
     }
+    setLoading(false);
     setOpen(false);
   }
 
@@ -359,8 +374,8 @@ function CreateHabitModal() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">
-              Create Habit
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Loading..." : "Create Habit"}
             </Button>
           </form>
         </Form>
