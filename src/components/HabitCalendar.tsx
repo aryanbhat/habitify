@@ -292,9 +292,9 @@ function ElementDialog({
               : "Add the value and mark the checkbox for this day. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="flex flex-col items-center justify-center gap-4 py-4">
           {type == "number" && (
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="flex w-full items-center  gap-4">
               <Label htmlFor="value" className="text-right flex gap-2">
                 Value
                 <span className=" text-slate-500 ">({unit})</span>
@@ -312,7 +312,7 @@ function ElementDialog({
             </div>
           )}
           {/* Checkbox input using Shadcn Checkbox component */}
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="flex w-full items-center  gap-14">
             <Label htmlFor="check" className="text-right">
               Completed
             </Label>
