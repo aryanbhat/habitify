@@ -144,7 +144,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             />
           </div>
         </div>
-        <div className="flex md:flex-col justify-center items-center gap-4 pt-4 border-t  border-border">
+        <div className="grid grid-cols-1 md:grid-cols-3 place-items-center gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (
             <StatCard
               icon={<TrendingUpIcon className="w-6 h-6" />}
