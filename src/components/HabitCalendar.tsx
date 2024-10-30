@@ -358,7 +358,7 @@ function StatCard({
           {label}
         </div>
         <div className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
-          {value} days
+          {value} {value > 1 ? "days" : "day"}
         </div>
       </div>
     </div>
