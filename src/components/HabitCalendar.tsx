@@ -211,21 +211,25 @@ function ElementDialog({
   }
 
   async function handleSave() {
-    if (value === 0 || value === "") {
-      if (type == "number") {
-        toast.error("you have not entered any value.", { id: "HabitCalendar" });
+    if (type === "number") {
+      if (value === 0 || value === "") {
+        if (type == "number") {
+          toast.error("you have not entered any value.", {
+            id: "HabitCalendar",
+          });
+          return;
+        }
+      }
+
+      if (typeof value === "number" && value <= 0) {
+        toast.error("Please enter valid value", { id: "HabitCalendar" });
         return;
       }
-    }
 
-    if (typeof value === "number" && value <= 0) {
-      toast.error("Please enter valid value", { id: "HabitCalendar" });
-      return;
-    }
-
-    if (typeof value === "string" && value <= "0") {
-      toast.error("Please enter a valid value", { id: "HabitCalendar" });
-      return;
+      if (typeof value === "string" && value <= "0") {
+        toast.error("Please enter a valid value", { id: "HabitCalendar" });
+        return;
+      }
     }
 
     if (!isChecked) {
