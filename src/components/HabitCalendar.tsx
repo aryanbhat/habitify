@@ -71,19 +71,40 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   };
 
   function handleTodayLog() {
+    if (handleLogDisable()) {
+      toast.error("You have already logged todays value", {
+        id: "HabitCalendar",
+        duration: 2000,
+      });
+      return;
+    }
     const today = formatDate(new Date());
     setCurrentDay(today);
     setOpen(true);
   }
 
+  function handleLogDisable(): boolean {
+    const today = formatDate(new Date());
+    const isPresent = values.find((value) => value.day === today);
+    if (isPresent) {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
-        <div className=" flex justify-between items-center mx-5">
-          <h2 className="text-2xl font-semibold tracking-tight">
+        <div className=" flex flex-col gap-5 md:flex-row  md:justify-between md:items-center md:mx-5">
+          <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
             {data.title}
           </h2>
-          <Button onClick={handleTodayLog}>Log Today</Button>
+          <Button
+            onClick={handleTodayLog}
+            className={` ${handleLogDisable() && " cursor-not-allowed"}`}
+          >
+            Log Today
+          </Button>
         </div>{" "}
         <ElementDialog
           open={open}
