@@ -26,6 +26,10 @@ export const fetchHabitsList = createAsyncThunk(
         };
         habitArr.push(newHabitObj);
       });
+
+      // TO SORT WHICH EVER HABIT YOU USE DAILY TO BE ON THE TOP
+      habitArr.sort((a, b) => (b.value.length || 0) - (a.value.length || 0));
+
       return habitArr;
     } catch (error) {
       const errorMsg =

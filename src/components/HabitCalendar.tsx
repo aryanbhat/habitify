@@ -22,6 +22,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
+import HabitDropDown from "./HabitDropDown";
 
 interface CalendarData {
   longestStreak: number;
@@ -95,16 +96,19 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
-        <div className=" flex flex-col gap-5 md:flex-row  md:justify-between md:items-center md:mx-5">
-          <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
-            {data.title}
-          </h2>
-          <Button
-            onClick={handleTodayLog}
-            className={` ${handleLogDisable() && " cursor-not-allowed"}`}
-          >
-            Log Today
-          </Button>
+        <div className=" flex flex-col gap-5 md:flex-row  md:justify-between md:items-center md:mx-6">
+          <div className="md:flex md:flex-row md:gap-8 flex flex-col items-center ">
+            <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
+              {data.title}
+            </h2>
+            <Button
+              onClick={handleTodayLog}
+              className={` ${handleLogDisable() && " cursor-not-allowed"}`}
+            >
+              Log Today
+            </Button>
+          </div>
+          <HabitDropDown data={data} />
         </div>{" "}
         <ElementDialog
           open={open}
