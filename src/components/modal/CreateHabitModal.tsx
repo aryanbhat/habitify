@@ -137,7 +137,7 @@ function CreateHabitModal() {
       <DialogTrigger asChild>
         <Button>Create a Habit</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] overflow-y-scroll max-h-screen">
+      <DialogContent className="sm:max-w-[600px] overflow-y-auto max-h-screen">
         <DialogHeader>
           <DialogTitle>Create a Habit</DialogTitle>
           <DialogDescription>
@@ -245,21 +245,21 @@ function CreateHabitModal() {
                       className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Streak
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <InfoIcon className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent
-                            className="bg-foreground"
-                            avoidCollisions={true}
-                            side="right"
-                          >
-                            <p>Shows your current unbroken streak</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-4 w-4" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          className="bg-foreground"
+                          avoidCollisions={true}
+                          side="right"
+                        >
+                          <p>Shows your current unbroken streak</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -283,24 +283,23 @@ function CreateHabitModal() {
                       className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Longest streak
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <InfoIcon className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent
-                            className="bg-foreground"
-                            avoidCollisions={true}
-                            side="right"
-                          >
-                            <p>
-                              Displays your longest streak achieved on the
-                              heatmap
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-4 w-4" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          className="bg-foreground"
+                          avoidCollisions={true}
+                          side="right"
+                        >
+                          <p>
+                            Displays your longest streak achieved on the heatmap
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -324,24 +323,24 @@ function CreateHabitModal() {
                       className="flex gap-x-4 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Total entries
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <InfoIcon className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent
-                            className="bg-foreground"
-                            avoidCollisions={true}
-                            side="right"
-                          >
-                            <p>
-                              Shows the total number of times you've completed
-                              this habit
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoIcon className="h-4 w-4" />
+                        </TooltipTrigger>
+                        <TooltipContent
+                          className="bg-foreground"
+                          avoidCollisions={true}
+                          side="right"
+                        >
+                          <p>
+                            Shows the total number of times you've completed
+                            this habit
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <FormMessage />
                 </FormItem>

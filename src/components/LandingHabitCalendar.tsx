@@ -134,20 +134,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
         <div className="w-full overflow-x-auto" ref={calendarRef}>
           <div className="min-w-[1000px] h-[40vh]">
             <ResponsiveCalendar
-              onClick={(date) => {
-                const today = formatDate(new Date());
-                if (date.day > today) {
-                  toast.error(
-                    "Oops! You can't select a future date. Please complete today's task first.",
-                    {
-                      id: "LandingHabitCalendar",
-                    }
-                  );
-                  return;
-                }
-                setCurrentDay(date.day);
-                setOpen(true);
-              }}
+              // onClick={(date) => {
+              //   return;
+              //   const today = formatDate(new Date());
+              //   if (date.day > today) {
+              //     toast.error(
+              //       "Oops! You can't select a future date. Please complete today's task first.",
+              //       {
+              //         id: "LandingHabitCalendar",
+              //       }
+              //     );
+              //     return;
+              //   }
+              //   setCurrentDay(date.day);
+              //   setOpen(true);
+              // }}
               data={values}
               from={`${new Date().getFullYear()}-01-01`}
               theme={theme}

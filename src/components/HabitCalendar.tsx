@@ -96,8 +96,8 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
-        <div className=" flex flex-col gap-5 md:flex-row  md:justify-between md:items-center md:mx-6">
-          <div className="md:flex md:flex-row md:gap-8 flex flex-col items-center ">
+        <div className=" flex justify-between gap-5 md:flex-row  md:justify-between md:items-center md:mx-6">
+          <div className="md:flex md:flex-row md:gap-8 flex flex-col items-start gap-2 ">
             <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
               {data.title}
             </h2>
@@ -323,10 +323,12 @@ function ElementDialog({
         </DialogHeader>
         <div className="flex flex-col items-center justify-center gap-4 py-4">
           {type == "number" && (
-            <div className="flex w-full items-center  gap-4">
+            <div className="flex w-full items-center gap-4">
               <Label htmlFor="value" className="text-right flex gap-2">
                 Value
-                <span className=" text-slate-500 ">({unit})</span>
+                <span className="text-slate-500 truncate max-w-[50px]">
+                  ({unit})
+                </span>
               </Label>
               <Input
                 id="value"
@@ -340,8 +342,7 @@ function ElementDialog({
               />
             </div>
           )}
-          {/* Checkbox input using Shadcn Checkbox component */}
-          <div className="flex w-full items-center  gap-14">
+          <div className="flex w-full items-center  gap-10">
             <Label htmlFor="check" className="text-right">
               Completed
             </Label>
