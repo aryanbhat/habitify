@@ -13,4 +13,5 @@ export type HabitValue = {
 export type CalendarValue = {
   value: number;
   day: string;
+  journal: string;
 };

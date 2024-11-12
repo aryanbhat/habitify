@@ -23,6 +23,7 @@ import { db } from "@/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
 import HabitDropDown from "./HabitDropDown";
+import { Textarea } from "./ui/textarea";
 
 interface CalendarData {
   longestStreak: number;
@@ -36,6 +37,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
   const [currentDay, setCurrentDay] = useState<string | null>("");
+  const [currDescription, setCurrDescription] = useState("");
   const [currValue, setCurrValue] = useState(0);
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
@@ -119,7 +121,6 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           unit={data.unit}
           values={values}
           id={data.id}
-          currValue={currValue}
         />
         <div className=" w-full overflow-x-auto">
           <div className="min-w-[1000px] h-[40vh]">
@@ -138,6 +139,9 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                 );
                 if (isPresent) {
                   setCurrValue(isPresent.value);
+                  if (isPresent.journal) {
+                    setCurrDescription(isPresent.journal);
+                  }
                 } else {
                   setCurrValue(0);
                 }
@@ -198,7 +202,18 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   );
 }
 
-function ElementDialog({
+interface ElementDialogProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  currentDay: string | null;
+  type: string;
+  values: CalendarValue[];
+  setValues: React.Dispatch<React.SetStateAction<CalendarValue[]>>;
+  unit: string;
+  id: string;
+}
+
+export function ElementDialog({
   open,
   setOpen,
   currentDay,
@@ -207,108 +222,92 @@ function ElementDialog({
   setValues,
   unit,
   id,
-  currValue,
-}: {
-  open: boolean;
-  setOpen: React.Dispatch<boolean>;
-  currentDay: string | null;
-  type: string;
-  values: CalendarValue[];
-  setValues: React.Dispatch<CalendarValue[]>;
-  unit: string;
-  id: string;
-  currValue: number;
-}) {
+}: ElementDialogProps) {
   const dispatch = useAppDispatch();
-  const [value, setValue] = useState<number | "">(currValue); // State for numeric input
-  const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
   const { user } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState<number | "">("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [journal, setJournal] = useState("");
 
   useEffect(() => {
-    setValue(currValue);
-  }, [currValue]);
+    if (currentDay && open) {
+      const currentValue = values.find(
+        (item: CalendarValue) => item.day === currentDay
+      );
+      if (currentValue) {
+        setValue(currentValue.value);
+        setJournal(currentValue.journal || "");
+        setIsChecked(true);
+      } else {
+        setValue("");
+        setJournal("");
+        setIsChecked(false);
+      }
+    }
+  }, [currentDay, open, values]);
 
-  function handleClose() {
+  const handleClose = () => {
+    setOpen(false);
+    setValue("");
+    setJournal("");
     setIsChecked(false);
-    setOpen(!open);
-    setValue(currValue);
-  }
+  };
 
-  async function handleSave() {
-    if (type === "number") {
-      if (value === 0 || value === "") {
-        if (type == "number") {
-          toast.error("you have not entered any value.", {
-            id: "HabitCalendar",
-          });
-          return;
-        }
-      }
-
-      if (typeof value === "number" && value <= 0) {
-        toast.error("Please enter valid value", { id: "HabitCalendar" });
-        return;
-      }
-
-      if (typeof value === "string" && value <= "0") {
-        toast.error("Please enter a valid value", { id: "HabitCalendar" });
-        return;
-      }
+  const handleSave = async () => {
+    if (
+      type === "number" &&
+      (value === "" || (typeof value === "number" && value <= 0))
+    ) {
+      toast.error("Please enter a valid value", { id: "HabitCalendar" });
+      return;
     }
 
     if (!isChecked) {
-      toast.error("please check the checkbox", { id: "HabitCalendar" });
+      toast.error("Please check the checkbox", { id: "HabitCalendar" });
       return;
     }
 
     setLoading(true);
 
     if (currentDay) {
-      let check = false;
-      const updatedValue = values.map((item: CalendarValue) => {
-        if (item.day === currentDay) {
-          check = true;
-          return { ...item, value: value as number };
-        }
-        return item;
-      });
+      const newValue: CalendarValue = {
+        day: currentDay,
+        value:
+          type === "number"
+            ? typeof value === "number"
+              ? value
+              : parseFloat(value) || 0
+            : 100,
+        journal,
+      };
 
-      if (!check) {
-        updatedValue.push({
-          day: currentDay as string,
-          value: value == 0 ? 100 : (value as number),
-        } as CalendarValue);
-      }
+      const updatedValues = values.some((item) => item.day === currentDay)
+        ? values.map((item) => (item.day === currentDay ? newValue : item))
+        : [...values, newValue];
+
       try {
         await setDoc(
           doc(db, `users/${user.uid}/habits`, id),
           {
-            value: updatedValue,
+            value: updatedValues,
           },
-          {
-            merge: true,
-          }
+          { merge: true }
         );
-        setValues(updatedValue);
-        dispatch(
-          updateValue({
-            habitId: id,
-            day: currentDay,
-            value,
-          })
-        );
+        setValues(updatedValues);
+        dispatch(updateValue(newValue));
+        toast.success("Habit updated successfully", { id: "HabitCalendar" });
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : "something went wrong";
+          error instanceof Error ? error.message : "Something went wrong";
         toast.error(errorMessage, { id: "HabitCalendar" });
       }
     }
     setLoading(false);
-    setOpen(!open);
-    setValue(currValue);
-    setIsChecked(false);
-  }
+    handleClose();
+  };
+
+  const remainingLines = 8 - journal.split("\n").length;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -316,48 +315,68 @@ function ElementDialog({
         <DialogHeader>
           <DialogTitle>Track the day</DialogTitle>
           <DialogDescription>
-            {type == "checkbox"
+            {type === "checkbox"
               ? "Mark the checkbox for this day. Click save when you're done."
               : "Add the value and mark the checkbox for this day. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center justify-center gap-4 py-4">
-          {type == "number" && (
-            <div className="flex w-full items-center gap-4">
-              <Label htmlFor="value" className="text-right flex gap-2">
+        <div className="grid gap-4 py-4">
+          {type === "number" && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="value" className="text-right">
                 Value
-                <span className="text-slate-500 truncate max-w-[50px]">
-                  ({unit})
-                </span>
               </Label>
               <Input
                 id="value"
                 type="number"
                 value={value}
                 onChange={(e) =>
-                  setValue(e.target.value ? parseInt(e.target.value) : "")
+                  setValue(e.target.value ? parseFloat(e.target.value) : "")
                 }
                 className="col-span-3"
-                placeholder="Enter value"
+                placeholder={`Enter value (${unit})`}
               />
             </div>
           )}
-          <div className="flex w-full items-center  gap-10">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="journal" className="text-right">
+              Journal
+            </Label>
+            <Textarea
+              id="journal"
+              placeholder="Write your daily accomplishment..."
+              value={journal}
+              onChange={(e) => {
+                const lines = e.target.value.split("\n");
+                if (lines.length <= 8) {
+                  setJournal(e.target.value);
+                } else {
+                  setJournal(lines.slice(0, 8).join("\n"));
+                }
+              }}
+              className="col-span-3 resize-none"
+              rows={8}
+            />
+            <div className="col-span-3 col-start-2 text-sm text-muted-foreground">
+              {remainingLines} {remainingLines === 1 ? "line" : "lines"}{" "}
+              remaining
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="check" className="text-right">
               Completed
             </Label>
-            <div className="col-span-1">
-              <Checkbox
-                id="check"
-                checked={isChecked}
-                onCheckedChange={(checked) => setIsChecked(!!checked)}
-              />
-            </div>
+            <Checkbox
+              id="check"
+              checked={isChecked}
+              onCheckedChange={(checked) => setIsChecked(!!checked)}
+              className="col-span-3"
+            />
           </div>
         </div>
         <DialogFooter>
           <Button type="submit" onClick={handleSave} disabled={loading}>
-            {loading ? "Loading..." : "Save changes"}
+            {loading ? "Saving..." : "Save changes"}
           </Button>
         </DialogFooter>
       </DialogContent>
