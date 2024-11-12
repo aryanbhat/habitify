@@ -17,7 +17,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { Checkbox } from "./ui/checkbox";
-import { formatDate } from "@/utils/formatDate";
+// import { formatDate } from "@/utils/formatDate";
 import {
   Select,
   SelectContent,
@@ -38,7 +38,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [colorValue, setColorValue] = useState(data.color);
   const [values, setValues] = useState(data.value);
-  const [currentDay, setCurrentDay] = useState<string | null>("");
+  // const [currentDay, setCurrentDay] = useState<string | null>("");
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -125,7 +125,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
         <ElementDialog
           open={open}
           setOpen={setOpen}
-          currentDay={currentDay}
+          currentDay={""}
           type={data.type}
           setValues={setValues}
           unit={data.unit}
@@ -248,6 +248,7 @@ function ElementDialog({
       const newValue: CalendarValue = {
         day: currentDay as string,
         value: value == 0 ? 100 : (value as number),
+        journal: "",
       };
       setValues([...values, newValue]);
     }

@@ -53,7 +53,7 @@ export const habitSlice = createSlice({
       }
     },
     updateValue: (state, { payload }) => {
-      const { habitId, day, value } = payload;
+      const { habitId, day, value, journal } = payload;
 
       const habit = state.data?.find((habit: HabitDataSchema) => {
         return habit.id === habitId;
@@ -63,8 +63,9 @@ export const habitSlice = createSlice({
         const currValue = habit.value?.find((elem) => elem.day === day);
         if (currValue) {
           currValue.value = value;
+          currValue.journal = journal;
         } else {
-          habit.value.push({ day, value });
+          habit.value.push({ day, value, journal });
         }
       }
     },

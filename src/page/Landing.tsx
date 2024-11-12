@@ -59,7 +59,11 @@ export default function LandingPage() {
     today.setHours(0, 0, 0, 0);
 
     const updatedCalendarValue: CalendarValue[] = [
-      { day: "2024-01-20", value: 10 },
+      {
+        day: "2024-01-20",
+        value: 10,
+        journal: "something good should be here",
+      },
     ];
 
     allDates2024.forEach((date) => {
@@ -69,6 +73,7 @@ export default function LandingPage() {
         updatedCalendarValue.push({
           day: dateString,
           value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 100
+          journal: "something good should be here",
         });
       }
     });

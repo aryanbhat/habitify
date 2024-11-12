@@ -37,8 +37,6 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
   const [currentDay, setCurrentDay] = useState<string | null>("");
-  const [currDescription, setCurrDescription] = useState("");
-  const [currValue, setCurrValue] = useState(0);
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -134,17 +132,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                   );
                   return;
                 }
-                const isPresent = values.find(
-                  (value) => value.day === date.day
-                );
-                if (isPresent) {
-                  setCurrValue(isPresent.value);
-                  if (isPresent.journal) {
-                    setCurrDescription(isPresent.journal);
-                  }
-                } else {
-                  setCurrValue(0);
-                }
+
                 setCurrentDay(date.day);
                 setOpen(true);
               }}
@@ -229,6 +217,7 @@ export function ElementDialog({
   const [value, setValue] = useState<number | "">("");
   const [isChecked, setIsChecked] = useState(false);
   const [journal, setJournal] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (currentDay && open) {
@@ -239,10 +228,12 @@ export function ElementDialog({
         setValue(currentValue.value);
         setJournal(currentValue.journal || "");
         setIsChecked(true);
+        setIsEditing(false);
       } else {
         setValue("");
         setJournal("");
         setIsChecked(false);
+        setIsEditing(true);
       }
     }
   }, [currentDay, open, values]);
@@ -252,6 +243,7 @@ export function ElementDialog({
     setValue("");
     setJournal("");
     setIsChecked(false);
+    setIsEditing(false);
   };
 
   const handleSave = async () => {
@@ -297,18 +289,19 @@ export function ElementDialog({
         setValues(updatedValues);
         dispatch(updateValue(newValue));
         toast.success("Habit updated successfully", { id: "HabitCalendar" });
+        setIsEditing(false);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Something went wrong";
         toast.error(errorMessage, { id: "HabitCalendar" });
+      } finally {
+        setOpen(false);
       }
     }
     setLoading(false);
-    handleClose();
   };
 
   const remainingLines = 8 - journal.split("\n").length;
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -329,11 +322,16 @@ export function ElementDialog({
               <Input
                 id="value"
                 type="number"
+                disabled={!isEditing}
                 value={value}
                 onChange={(e) =>
                   setValue(e.target.value ? parseFloat(e.target.value) : "")
                 }
-                className="col-span-3"
+                className={`col-span-3 ${
+                  !isEditing
+                    ? "bg-muted text-foreground cursor-default overflow-x-auto whitespace-nowrap"
+                    : ""
+                }`}
                 placeholder={`Enter value (${unit})`}
               />
             </div>
@@ -343,6 +341,7 @@ export function ElementDialog({
               Journal
             </Label>
             <Textarea
+              disabled={!isEditing}
               id="journal"
               placeholder="Write your daily accomplishment..."
               value={journal}
@@ -354,8 +353,13 @@ export function ElementDialog({
                   setJournal(lines.slice(0, 8).join("\n"));
                 }
               }}
-              className="col-span-3 resize-none"
+              className={`col-span-3 resize-none ${
+                !isEditing
+                  ? "text-white opacity-100 cursor-default overflow-y-auto"
+                  : ""
+              }`}
               rows={8}
+              style={{ WebkitTextFillColor: "inherit" }}
             />
             <div className="col-span-3 col-start-2 text-sm text-muted-foreground">
               {remainingLines} {remainingLines === 1 ? "line" : "lines"}{" "}
@@ -367,16 +371,21 @@ export function ElementDialog({
               Completed
             </Label>
             <Checkbox
+              disabled={!isEditing}
               id="check"
               checked={isChecked}
               onCheckedChange={(checked) => setIsChecked(!!checked)}
-              className="col-span-3"
+              className={`col-span-3 ${!isEditing ? "cursor-default" : ""}`}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSave} disabled={loading}>
-            {loading ? "Saving..." : "Save changes"}
+          <Button
+            type="submit"
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            disabled={loading}
+          >
+            {loading ? "Saving..." : isEditing ? "Save changes" : "Edit"}
           </Button>
         </DialogFooter>
       </DialogContent>
