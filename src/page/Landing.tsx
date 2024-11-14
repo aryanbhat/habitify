@@ -7,8 +7,8 @@ import {
   faArrowRight,
   faCalendarAlt,
   faChartLine,
-  faClock,
   faCheck,
+  faBookOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { auth } from "@/firebaseConfig";
@@ -164,9 +164,9 @@ export default function LandingPage() {
             description="Gain deep insights into your habits with customizable statistics and trends."
           />
           <FeatureCard
-            icon={faClock}
-            title="Build Lasting Habits"
-            description="Stay motivated and consistent with streak tracking and reminders."
+            icon={faBookOpen}
+            title="Daily Journaling"
+            description="Reflect on your habits with built-in journaling."
           />
         </motion.div>
 
