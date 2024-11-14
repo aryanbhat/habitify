@@ -1,4 +1,9 @@
-import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  TrendingUpIcon,
+  BarChartIcon,
+  Calendar,
+} from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
 import React, { useEffect, useState } from "react";
@@ -310,7 +315,13 @@ export function ElementDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Track the day</DialogTitle>
+          <DialogTitle className=" flex gap-6 items-center">
+            <span>Track the day</span>
+            <div className=" flex gap-2 items-center">
+              <span>{<Calendar className=" h-12 w-4" />}</span>
+              <span>{currentDay?.split("-").reverse().join("-")}</span>
+            </div>
+          </DialogTitle>
           <DialogDescription>
             {type === "checkbox"
               ? "Mark the checkbox for this day. Click save when you're done."

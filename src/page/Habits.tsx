@@ -34,6 +34,7 @@ export default function Habits() {
         {data && <CreateHabitModal />}
 
         {!showContent || isLoading ? (
+          //loading state here for habits
           <div className="w-full flex justify-center items-center">
             <iframe
               width="300"
