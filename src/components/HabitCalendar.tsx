@@ -110,6 +110,10 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           </div>
           <HabitDropDown data={data} />
         </div>{" "}
+        <p className="text-sm text-muted-foreground mb-2 block">
+          Click on any square in the calendar grid to view or edit the details
+          for that day.
+        </p>
         <ElementDialog
           open={open}
           setOpen={setOpen}
@@ -121,7 +125,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           id={data.id}
         />
         <div className=" w-full overflow-x-auto">
-          <div className="min-w-[1000px] h-[40vh]">
+          <div className="min-w-[1100px] h-[40vh]">
             <ResponsiveCalendar
               onClick={(date) => {
                 const today = formatDate(new Date());
