@@ -3,6 +3,7 @@ import {
   TrendingUpIcon,
   BarChartIcon,
   Calendar,
+  CheckCircle2,
 } from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
@@ -29,6 +30,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
 // import HabitDropDown from "./HabitDropDown";
 import { Textarea } from "./ui/textarea";
+import HabitDropDown from "./HabitDropDown";
 
 interface CalendarData {
   longestStreak: number;
@@ -72,8 +74,24 @@ export default function HabitCalendar(props: { data: HabitValue }) {
         borderRadius: "4px",
         boxShadow:
           "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        padding: "8px 12px",
       },
     },
+  };
+
+  const toolTipStyle = {
+    background: "hsl(var(--secondary))",
+    color: "hsl(var(--secondary-foreground))",
+    fontSize: "14px",
+    // fontWeight: "bold",
+    borderRadius: "6px",
+    boxShadow:
+      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    padding: "10px 14px",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "flex-start",
+    gap: "4px",
   };
 
   function handleTodayLog() {
@@ -113,7 +131,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               Log Today
             </Button>
           </div>
-          {/* <HabitDropDown data={data} /> */}
+          <HabitDropDown data={data} />
         </div>{" "}
         <p className="text-sm text-muted-foreground mb-2 block">
           Click on any square in the calendar grid to view or edit the details
@@ -156,6 +174,31 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               monthBorderColor="#020817"
               dayBorderWidth={2}
               dayBorderColor="#020817"
+              tooltip={({ day, value }) => (
+                <div style={toolTipStyle}>
+                  <span style={{ fontSize: "16px" }}>
+                    {new Date(day).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {data.type === "checkbox" ? (
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      {value ? <CheckCircle2 size={16} /> : null}
+                      {value ? "Completed" : "Not completed"}
+                    </span>
+                  ) : (
+                    <span>{`${value} ${data.unit}`}</span>
+                  )}
+                </div>
+              )}
               legends={[
                 {
                   anchor: "bottom-right",
@@ -170,6 +213,23 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               ]}
             />
           </div>
+          {data.type === "number" && (
+            <div className="flex justify-end items-center mt-4">
+              <div className="flex items-center space-x-2 md:mr-8">
+                <span className="text-sm font-medium">Less</span>
+                {colorsPallete[data.color as keyof typeof colorsPallete].map(
+                  (color: string, index: number) => (
+                    <div
+                      key={index}
+                      className="w-6 h-6 rounded"
+                      style={{ backgroundColor: color }}
+                    />
+                  )
+                )}
+                <span className="text-sm font-medium">More</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (

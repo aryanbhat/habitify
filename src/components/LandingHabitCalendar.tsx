@@ -1,4 +1,9 @@
-import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  TrendingUpIcon,
+  BarChartIcon,
+  CheckCircle2,
+} from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
 import React, { useEffect, useRef, useState } from "react";
@@ -81,6 +86,21 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     setColorValue(data.color);
   }
 
+  const toolTipStyle = {
+    background: "hsl(var(--secondary))",
+    color: "hsl(var(--secondary-foreground))",
+    fontSize: "14px",
+    // fontWeight: "bold",
+    borderRadius: "6px",
+    boxShadow:
+      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    padding: "10px 14px",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "flex-start",
+    gap: "4px",
+  };
+
   return (
     <div className="bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
       <div className="p-6 space-y-6">
@@ -160,6 +180,31 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               monthBorderColor="#020817"
               dayBorderWidth={2}
               dayBorderColor="#020817"
+              tooltip={({ day, value }) => (
+                <div style={toolTipStyle}>
+                  <span style={{ fontSize: "16px" }}>
+                    {new Date(day).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {data.type === "checkbox" ? (
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      {value ? <CheckCircle2 size={16} /> : null}
+                      {value ? "Completed" : "Not completed"}
+                    </span>
+                  ) : (
+                    <span>{`${value} ${data.unit}`}</span>
+                  )}
+                </div>
+              )}
               legends={[
                 {
                   anchor: "bottom-right",
@@ -174,6 +219,23 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               ]}
             />
           </div>
+          {data.type === "number" && (
+            <div className="flex justify-end items-center mt-4">
+              <div className="flex items-center space-x-2 md:mr-8">
+                <span className="text-sm font-medium">Less</span>
+                {colorsPallete[colorValue as keyof typeof colorsPallete].map(
+                  (color: string, index: number) => (
+                    <div
+                      key={index}
+                      className="w-6 h-6 rounded"
+                      style={{ backgroundColor: color }}
+                    />
+                  )
+                )}
+                <span className="text-sm font-medium">More</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {data.longestStreak && (
