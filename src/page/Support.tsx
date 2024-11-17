@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faPaypal } from "@fortawesome/free-brands-svg-icons";
+import { faStar, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
@@ -19,7 +20,6 @@ import { useAppDispatch } from "@/hooks/reduxHook";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 
 export default function SupportPage() {
-  const [amount, setAmount] = useState("");
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState("suggestion");
 
@@ -27,32 +27,39 @@ export default function SupportPage() {
 
   useEffect(() => {
     dispatch(setNavbarState(1));
-  });
+  }, [dispatch]);
 
-  const handleDonation = (e: React.FormEvent) => {
+  const handleFeedback = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would integrate with a payment processor
-    toast.success(
-      `Thank you for being so kind for dontaing ${amount} $, I have no paywall added right now`,
-      {
-        id: "Support",
-      }
-    );
-    setAmount("");
-  };
-
-  const handleFeedback = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would handle the feedback submission
-    toast.success("feedback submitted", {
+    toast.success("Thank you for your feedback!", {
       id: "Support",
     });
-    setFeedback("");
-    setFeedbackType("suggestion");
+    // try {
+    //   await fetch("/api/send-feedback", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       type: feedbackType,
+    //       message: feedback,
+    //       email: "aryanbhat324@gmail.com",
+    //     }),
+    //   });
+    //   toast.success("Thank you for your feedback!", {
+    //     id: "Support",
+    //   });
+    //   setFeedback("");
+    //   setFeedbackType("suggestion");
+    // } catch (error) {
+    //   toast.error(
+    //     "There was an error submitting your feedback. Please try again."
+    //   );
+    // }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground py-2 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background text-foreground py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <motion.h1
           className="text-4xl font-bold text-center mb-8"
@@ -60,7 +67,7 @@ export default function SupportPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          Support the Habit Tracker
+          Support Habitify
         </motion.h1>
 
         <motion.section
@@ -69,10 +76,61 @@ export default function SupportPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          <Card className="bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center justify-center">
+                <FontAwesomeIcon icon={faGithub} className="mr-2" />
+                Habitify on GitHub
+              </CardTitle>
+              <CardDescription className="text-center">
+                Habitify is an open-source project. Your contributions make a
+                difference!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="mb-4">
+                We believe in the power of community and collaboration. By
+                contributing to Habitify, you're helping to create a tool that
+                benefits everyone.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a
+                  href="https://github.com/aryanbhat/habitify"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto"
+                >
+                  <Button className="w-full">
+                    <FontAwesomeIcon icon={faGithub} className="mr-2" />
+                    View Repository
+                  </Button>
+                </a>
+                <a
+                  href="https://github.com/aryanbhat/habitify"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto"
+                >
+                  <Button variant="outline" className="w-full">
+                    <FontAwesomeIcon icon={faStar} className="mr-2" />
+                    Star the Project
+                  </Button>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
+
+        <motion.section
+          className="mb-12"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
           <h2 className="text-2xl font-semibold mb-4">Why Support Us?</h2>
           <p className="mb-4">
-            Your support helps us continue to improve and maintain the Habit
-            Tracker app. With your contribution, we can:
+            Your support helps us continue to improve and maintain Habitify.
+            With your contribution, we can:
           </p>
           <ul className="list-disc list-inside mb-4">
             <li>
@@ -92,36 +150,28 @@ export default function SupportPage() {
           className="mb-12"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
         >
           <Card>
             <CardHeader>
-              <CardTitle>Make a Donation</CardTitle>
+              <CardTitle>Support Habitify</CardTitle>
               <CardDescription>
-                Your support keeps us going. Choose any amount you're
-                comfortable with.
+                Your donation helps keep Habitify free and continuously
+                improving.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleDonation}>
-                <div className="mb-4">
-                  <Label htmlFor="amount">Donation Amount ($)</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    placeholder="Enter amount"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    min="1"
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  <FontAwesomeIcon icon={faHeart} className="mr-2" />
-                  Donate
+              <a
+                href="https://paypal.me/AryanBhatIN"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button type="button" className="w-full">
+                  <FontAwesomeIcon icon={faPaypal} className="mr-2" />
+                  Donate with PayPal
                 </Button>
-              </form>
+              </a>
             </CardContent>
           </Card>
         </motion.section>
@@ -129,18 +179,18 @@ export default function SupportPage() {
         <motion.section
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
         >
           <Card>
             <CardHeader>
               <CardTitle>Share Your Thoughts</CardTitle>
               <CardDescription>
-                We value your feedback. Let us know how we can improve!
+                We value your feedback. Let us know how we can improve Habitify!
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleFeedback}>
-                <div className="mb-4">
+              <form onSubmit={handleFeedback} className="space-y-4">
+                <div>
                   <Label htmlFor="feedbackType">Feedback Type</Label>
                   <RadioGroup
                     id="feedbackType"
@@ -161,7 +211,7 @@ export default function SupportPage() {
                     </div>
                   </RadioGroup>
                 </div>
-                <div className="mb-4">
+                <div>
                   <Label htmlFor="feedback">Your Feedback</Label>
                   <Textarea
                     id="feedback"

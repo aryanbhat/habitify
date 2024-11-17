@@ -3,6 +3,7 @@ import {
   TrendingUpIcon,
   BarChartIcon,
   CheckCircle2,
+  Calendar,
 } from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
@@ -31,6 +32,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import { ScrollArea } from "./ui/scroll-area";
+import { formatDate } from "@/utils/formatDate";
+import { Textarea } from "./ui/textarea";
 
 interface CalendarData {
   longestStreak: number;
@@ -43,7 +46,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [colorValue, setColorValue] = useState(data.color);
   const [values, setValues] = useState(data.value);
-  // const [currentDay, setCurrentDay] = useState<string | null>("");
+  const [currentDay, setCurrentDay] = useState<string | null>("");
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -142,10 +145,14 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             </Select>
           </div>
         </div>
+        <p className="text-sm text-muted-foreground mb-2 block">
+          Click on any square in the calendar grid to view or edit the details
+          for that day.
+        </p>
         <ElementDialog
           open={open}
           setOpen={setOpen}
-          currentDay={""}
+          currentDay={currentDay}
           type={data.type}
           setValues={setValues}
           unit={data.unit}
@@ -154,21 +161,20 @@ export default function HabitCalendar(props: { data: HabitValue }) {
         <div className="w-full overflow-x-auto" ref={calendarRef}>
           <div className="min-w-[1000px] h-[40vh]">
             <ResponsiveCalendar
-              // onClick={(date) => {
-              //   return;
-              //   const today = formatDate(new Date());
-              //   if (date.day > today) {
-              //     toast.error(
-              //       "Oops! You can't select a future date. Please complete today's task first.",
-              //       {
-              //         id: "LandingHabitCalendar",
-              //       }
-              //     );
-              //     return;
-              //   }
-              //   setCurrentDay(date.day);
-              //   setOpen(true);
-              // }}
+              onClick={(date) => {
+                const today = formatDate(new Date());
+                if (date.day > today) {
+                  // toast.error(
+                  //   "Oops! You can't select a future date. Please complete today's task first.",
+                  //   {
+                  //     id: "LandingHabitCalendar",
+                  //   }
+                  // );
+                  return;
+                }
+                setCurrentDay(date.day);
+                setOpen(true);
+              }}
               data={values}
               from={`${new Date().getFullYear()}-01-01`}
               theme={theme}
@@ -219,24 +225,24 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               ]}
             />
           </div>
-          {data.type === "number" && (
-            <div className="flex justify-end items-center mt-4">
-              <div className="flex items-center space-x-2 md:mr-8">
-                <span className="text-sm font-medium">Less</span>
-                {colorsPallete[colorValue as keyof typeof colorsPallete].map(
-                  (color: string, index: number) => (
-                    <div
-                      key={index}
-                      className="w-6 h-6 rounded"
-                      style={{ backgroundColor: color }}
-                    />
-                  )
-                )}
-                <span className="text-sm font-medium">More</span>
-              </div>
-            </div>
-          )}
         </div>
+        {data.type === "number" && (
+          <div className="flex justify-end items-center mt-4">
+            <div className="flex items-center space-x-2 md:mr-8">
+              <span className="text-sm font-medium">Less</span>
+              {colorsPallete[colorValue as keyof typeof colorsPallete].map(
+                (color: string, index: number) => (
+                  <div
+                    key={index}
+                    className="w-6 h-6 rounded"
+                    style={{ backgroundColor: color }}
+                  />
+                )
+              )}
+              <span className="text-sm font-medium">More</span>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           {data.longestStreak && (
             <StatCard
@@ -284,11 +290,34 @@ function ElementDialog({
 }) {
   const [value, setValue] = useState<number | "">(0); // State for numeric input
   const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
+  const [isEditing, setIsEditing] = useState(false);
+  const [journal, setJournal] = useState("");
+
+  useEffect(() => {
+    if (currentDay && open) {
+      const currentValue = values.find(
+        (item: CalendarValue) => item.day === currentDay
+      );
+      if (currentValue) {
+        setValue(currentValue.value);
+        setJournal(currentValue.journal || "");
+        setIsChecked(true);
+        setIsEditing(false);
+      } else {
+        setValue("");
+        setJournal("");
+        setIsChecked(false);
+        setIsEditing(true);
+      }
+    }
+  }, [currentDay, open, values]);
 
   function handleClose() {
+    setOpen(false);
     setValue("");
+    setJournal("");
     setIsChecked(false);
-    setOpen(!open);
+    setIsEditing(false);
   }
 
   function handleSave() {
@@ -310,60 +339,102 @@ function ElementDialog({
       const newValue: CalendarValue = {
         day: currentDay as string,
         value: value == 0 ? 100 : (value as number),
-        journal: "",
+        journal: journal,
       };
       setValues([...values, newValue]);
     }
     setOpen(!open);
   }
-
+  const remainingLines = 8 - journal.split("\n").length;
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Track the day</DialogTitle>
+          <DialogTitle className=" flex gap-6 items-center">
+            <span>Track the day</span>
+            <div className=" flex gap-2 items-center">
+              <span>{<Calendar className=" h-12 w-4" />}</span>
+              <span>{currentDay?.split("-").reverse().join("-")}</span>
+            </div>
+          </DialogTitle>
           <DialogDescription>
-            {type == "checkbox"
+            {type === "checkbox"
               ? "Mark the checkbox for this day. Click save when you're done."
               : "Add the value and mark the checkbox for this day. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          {type == "number" && (
+          {type === "number" && (
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="value" className="text-right flex gap-2">
+              <Label htmlFor="value" className="text-right">
                 Value
-                <span className=" text-slate-500 ">({unit})</span>
               </Label>
               <Input
                 id="value"
                 type="number"
+                disabled={!isEditing}
                 value={value}
                 onChange={(e) =>
-                  setValue(e.target.value ? parseInt(e.target.value) : "")
+                  setValue(e.target.value ? parseFloat(e.target.value) : "")
                 }
-                className="col-span-3"
-                placeholder="Enter value"
+                className={`col-span-3 ${
+                  !isEditing
+                    ? "bg-muted text-foreground cursor-default overflow-x-auto whitespace-nowrap"
+                    : ""
+                }`}
+                placeholder={`Enter value (${unit})`}
               />
             </div>
           )}
-          {/* Checkbox input using Shadcn Checkbox component */}
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="journal" className="text-right">
+              Journal
+            </Label>
+            <Textarea
+              disabled={!isEditing}
+              id="journal"
+              placeholder="Write your daily accomplishment..."
+              value={journal}
+              onChange={(e) => {
+                const lines = e.target.value.split("\n");
+                if (lines.length <= 8) {
+                  setJournal(e.target.value);
+                } else {
+                  setJournal(lines.slice(0, 8).join("\n"));
+                }
+              }}
+              className={`col-span-3 resize-none ${
+                !isEditing
+                  ? "text-white opacity-100 cursor-default overflow-y-auto"
+                  : ""
+              }`}
+              rows={8}
+              style={{ WebkitTextFillColor: "inherit" }}
+            />
+            <div className="col-span-3 col-start-2 text-sm text-muted-foreground">
+              {remainingLines} {remainingLines === 1 ? "line" : "lines"}{" "}
+              remaining
+            </div>
+          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="check" className="text-right">
               Completed
             </Label>
-            <div className="col-span-1">
-              <Checkbox
-                id="check"
-                checked={isChecked}
-                onCheckedChange={(checked) => setIsChecked(!!checked)}
-              />
-            </div>
+            <Checkbox
+              disabled={!isEditing}
+              id="check"
+              checked={isChecked}
+              onCheckedChange={(checked) => setIsChecked(!!checked)}
+              className={`col-span-3 ${!isEditing ? "cursor-default" : ""}`}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSave}>
-            Save changes
+          <Button
+            type="submit"
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+          >
+            {isEditing ? "Save changes" : "Edit"}
           </Button>
         </DialogFooter>
       </DialogContent>
