@@ -34,6 +34,7 @@ export default function SupportPage() {
     toast.success("Thank you for your feedback!", {
       id: "Support",
     });
+    //sahil do here
     // try {
     //   await fetch("/api/send-feedback", {
     //     method: "POST",
