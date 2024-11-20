@@ -18,6 +18,53 @@ export default function LandingPage() {
     navigate("/login");
   };
 
+  const productivityQuotes = [
+    "Productivity is being able to do things that you were never able to do before. – Franz Kafka",
+    "The tragedy in life doesn’t lie in not reaching your goal. The tragedy lies in having no goal to reach. – Benjamin E. Mays",
+    "Working on the right thing is probably more important than working hard. – Caterina Fake",
+    "Efficiency is doing things right. Effectiveness is doing the right things. – Peter Drucker",
+    "Where your attention goes, your time goes. – Idowu Koyenikan",
+    "Knowledge is the source of wealth. Applied to tasks we already know, it becomes productivity. Applied to tasks that are new, it becomes innovation. – Peter Drucker",
+    "Procrastination is the fear of success. – Denis Waitley",
+    "Sometimes, things may not go your way, but the effort should be there every single night. – Michael Jordan",
+    "If you spend too much time thinking about a thing, you’ll never get it done. – Bruce Lee",
+    "The way to get started is to quit talking and begin doing. – Walt Disney",
+    "Action is the foundational key to all success. – Pablo Picasso",
+    "We have a strategic plan. It’s called doing things. – Herb Kelleher",
+    "You see, in life, lots of people know what to do, but few people actually do what they know. – Tony Robbins",
+    "Focus on being productive instead of busy. – Tim Ferriss",
+    "The secret of getting ahead is getting started. – Mark Twain",
+    "Time management is about life management. – Idowu Koyenikan",
+    "Your mind is for having ideas, not holding them. – David Allen",
+    "Don’t think about what can happen in a month or a year. Focus on the 24 hours in front of you. – Eric Thomas",
+    "Touch paper only once. – Robert Allen",
+    "Success is a lousy teacher. It seduces smart people into thinking they can’t lose. – Bill Gates",
+    "What we fear doing most is usually what we most need to do. – Tim Ferriss",
+    "Motivation is what gets you started. Habit is what keeps you going. – Jim Rohn",
+    "Fall in love with the process, and the results will come. – Eric Thomas",
+    "Starve your distraction and feed your focus. – Unknown",
+    "What gets measured gets managed. – Peter Drucker",
+    "Continuous improvement is better than delayed perfection. – Mark Twain",
+    "Lost time is never found again. – Benjamin Franklin",
+    "If you want something done, give it to a busy man. – Preston Sturges",
+    "Plans are nothing; planning is everything. – Dwight D. Eisenhower",
+    "Practice isn’t the thing you do once you’re good. It’s the thing you do that makes you good. – Malcolm Gladwell",
+    "Life’s gardeners pluck the weeds and care only for the productive plants. – Bryant McGill",
+    "It’s not always that we need to do more but rather that we need to focus on less. – Nathan W. Morris",
+    "Soon is not as good as now. – Seth Godin",
+    "The true price of anything you do is the amount of time you exchange for it. – Henry David Thoreau",
+    "Busy is a decision. – Debbie Millman",
+    "Improved productivity means less human sweat, not more. – Henry Ford",
+    "The least productive people are usually the ones who are most in favor of holding meetings. – Thomas Sowell",
+    "You miss 100% of the shots you don’t take. – Wayne Gretzky",
+    "Either you run the day or the day runs you. – Jim Rohn",
+    "Problems become opportunities when the right people join together. – Robert Redfort",
+    "The only way to achieve the impossible is to believe it is possible. – Charles Kingsleigh",
+    "Action breeds confidence and courage. – Dale Carnegie",
+    "The best way to predict the future is to create it. – Peter Drucker",
+    "Success is the sum of small efforts, repeated day in and day out. – Robert Collier",
+  ];
+
   useEffect(() => {
     dispatch(setNavbarState(0));
 
@@ -53,7 +100,10 @@ export default function LandingPage() {
       {
         day: "2024-01-20",
         value: 10,
-        journal: "something good should be here",
+        journal:
+          productivityQuotes[
+            Math.floor(Math.random() * productivityQuotes.length)
+          ],
       },
     ];
 
@@ -64,7 +114,10 @@ export default function LandingPage() {
         updatedCalendarValue.push({
           day: dateString,
           value: Math.floor(Math.random() * 10) + 1,
-          journal: "something good should be here",
+          journal:
+            productivityQuotes[
+              Math.floor(Math.random() * productivityQuotes.length)
+            ],
         });
       }
     });
