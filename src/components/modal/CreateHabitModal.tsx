@@ -41,7 +41,13 @@ import {
 } from "../ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import toast from "react-hot-toast";
 import { fetchHabitsList } from "@/stores/habitSlice/habitSlice";
@@ -70,6 +76,7 @@ function CreateHabitModal() {
     const newHabit = {
       ...values,
       value: [],
+      createdAt: serverTimestamp(),
     };
 
     const { title, unit, type } = values;

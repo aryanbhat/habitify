@@ -30,7 +30,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
 // import HabitDropDown from "./HabitDropDown";
 import { Textarea } from "./ui/textarea";
-import HabitDropDown from "./HabitDropDown";
+// import HabitDropDown from "./HabitDropDown";
 
 interface CalendarData {
   longestStreak: number;
@@ -131,7 +131,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               Log Today
             </Button>
           </div>
-          <HabitDropDown data={data} />
+          {/* <HabitDropDown data={data} /> */}
         </div>{" "}
         <p className="text-sm text-muted-foreground mb-2 block">
           Click on any square in the calendar grid to view or edit the details
