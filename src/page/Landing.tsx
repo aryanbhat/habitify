@@ -205,14 +205,15 @@ export default function LandingPage() {
         </motion.div>
 
         {calendarValue.length > 0 && (
-          <motion.div className="mb-16" variants={itemVariants}>
+          <motion.div
+            className="mb-16 flex flex-col items-center"
+            variants={itemVariants}
+          >
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
               Visualize Your Progress
             </h2>
-            <div className="w-[80vw]">
-              <div className="w-[81vw]">
-                <HabitCalendar data={calendarData} />
-              </div>
+            <div className="w-[90vw] max-w-[1400px] min-w-[300px]">
+              <HabitCalendar data={calendarData} />
             </div>
           </motion.div>
         )}
