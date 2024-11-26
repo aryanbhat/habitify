@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import toast from "react-hot-toast";
 import { useAppDispatch } from "@/hooks/reduxHook";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
+import { handlePseudoAnchor } from "@/utils/handleNavigation";
 
 export default function SupportPage() {
   const [feedback, setFeedback] = useState("");
@@ -34,29 +35,10 @@ export default function SupportPage() {
     toast.success("Thank you for your feedback!", {
       id: "Support",
     });
-    //sahil do here
-    // try {
-    //   await fetch("/api/send-feedback", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       type: feedbackType,
-    //       message: feedback,
-    //       email: "aryanbhat324@gmail.com",
-    //     }),
-    //   });
-    //   toast.success("Thank you for your feedback!", {
-    //     id: "Support",
-    //   });
-    //   setFeedback("");
-    //   setFeedbackType("suggestion");
-    // } catch (error) {
-    //   toast.error(
-    //     "There was an error submitting your feedback. Please try again."
-    //   );
-    // }
+
+    const url = `https://github.com/aryanbhat/habitify/issues/new?title=${feedback}`;
+
+    handlePseudoAnchor(url, true);
   };
 
   return (
