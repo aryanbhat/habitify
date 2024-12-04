@@ -25,7 +25,13 @@ import { db } from "@/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { fetchHabitsList } from "@/stores/habitSlice/habitSlice";
 
-export default function HabitDropDown({ data }: { data: HabitValue }) {
+export default function HabitDropDown({
+  data,
+  handleTodayLog,
+}: {
+  data: HabitValue;
+  handleTodayLog: () => void;
+}) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -75,13 +81,10 @@ export default function HabitDropDown({ data }: { data: HabitValue }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer"
-          onSelect={() => setIsDropdownOpen(false)}
-        >
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onSelect={() => setIsDropdownOpen(false)}
+          onSelect={() => {
+            handleTodayLog();
+            setIsDropdownOpen(false);
+          }}
         >
           Today's log
         </DropdownMenuItem>

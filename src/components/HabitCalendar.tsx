@@ -28,9 +28,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
-// import HabitDropDown from "./HabitDropDown";
 import { Textarea } from "./ui/textarea";
-// import HabitDropDown from "./HabitDropDown";
+import HabitDropDown from "./HabitDropDown";
 
 interface CalendarData {
   longestStreak: number;
@@ -107,6 +106,12 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     setOpen(true);
   }
 
+  function handleEditTodayLog() {
+    const today = formatDate(new Date());
+    setCurrentDay(today);
+    setOpen(true);
+  }
+
   function handleLogDisable(): boolean {
     const today = formatDate(new Date());
     const isPresent = values.find((value) => value.day === today);
@@ -131,7 +136,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               Log Today
             </Button>
           </div>
-          {/* <HabitDropDown data={data} /> */}
+          <HabitDropDown data={data} handleTodayLog={handleEditTodayLog} />
         </div>{" "}
         <p className="text-sm text-muted-foreground mb-2 block">
           Click on any square in the calendar grid to view or edit the details
