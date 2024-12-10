@@ -1,4 +1,10 @@
-import { CalendarIcon, TrendingUpIcon, BarChartIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  TrendingUpIcon,
+  BarChartIcon,
+  Calendar,
+  CheckCircle2,
+} from "lucide-react";
 import { ResponsiveCalendar } from "@nivo/calendar";
 import { CalendarValue, HabitValue } from "@/Types/type";
 import React, { useEffect, useState } from "react";
@@ -22,6 +28,8 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
+import { Textarea } from "./ui/textarea";
+import HabitDropDown from "./HabitDropDown";
 
 interface CalendarData {
   longestStreak: number;
@@ -35,7 +43,6 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
   const [currentDay, setCurrentDay] = useState<string | null>("");
-  const [currValue, setCurrValue] = useState(0);
   const [calendarData, setCalendarData] = useState<CalendarData>({
     longestStreak: 0,
     currentStreak: 0,
@@ -66,8 +73,24 @@ export default function HabitCalendar(props: { data: HabitValue }) {
         borderRadius: "4px",
         boxShadow:
           "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        padding: "8px 12px",
       },
     },
+  };
+
+  const toolTipStyle = {
+    background: "hsl(var(--secondary))",
+    color: "hsl(var(--secondary-foreground))",
+    fontSize: "14px",
+    // fontWeight: "bold",
+    borderRadius: "6px",
+    boxShadow:
+      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    padding: "10px 14px",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "flex-start",
+    gap: "4px",
   };
 
   function handleTodayLog() {
@@ -78,6 +101,12 @@ export default function HabitCalendar(props: { data: HabitValue }) {
       });
       return;
     }
+    const today = formatDate(new Date());
+    setCurrentDay(today);
+    setOpen(true);
+  }
+
+  function handleEditTodayLog() {
     const today = formatDate(new Date());
     setCurrentDay(today);
     setOpen(true);
@@ -95,17 +124,24 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
-        <div className=" flex flex-col gap-5 md:flex-row  md:justify-between md:items-center md:mx-5">
-          <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
-            {data.title}
-          </h2>
-          <Button
-            onClick={handleTodayLog}
-            className={` ${handleLogDisable() && " cursor-not-allowed"}`}
-          >
-            Log Today
-          </Button>
+        <div className=" flex justify-between gap-5 md:flex-row  md:justify-between md:items-center md:mx-6">
+          <div className="md:flex md:flex-row md:gap-8 flex flex-col items-start gap-2 ">
+            <h2 className="text-2xl font-semibold tracking-tight  text-ellipsis overflow-hidden max-w-[50vw] text-center">
+              {data.title}
+            </h2>
+            <Button
+              onClick={handleTodayLog}
+              className={` ${handleLogDisable() && " cursor-not-allowed"}`}
+            >
+              Log Today
+            </Button>
+          </div>
+          <HabitDropDown data={data} handleTodayLog={handleEditTodayLog} />
         </div>{" "}
+        <p className="text-sm text-muted-foreground mb-2 block">
+          Click on any square in the calendar grid to view or edit the details
+          for that day.
+        </p>
         <ElementDialog
           open={open}
           setOpen={setOpen}
@@ -115,10 +151,9 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           unit={data.unit}
           values={values}
           id={data.id}
-          currValue={currValue}
         />
         <div className=" w-full overflow-x-auto">
-          <div className="min-w-[1000px] h-[40vh]">
+          <div className="min-w-[1100px] h-[40vh]">
             <ResponsiveCalendar
               onClick={(date) => {
                 const today = formatDate(new Date());
@@ -129,14 +164,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                   );
                   return;
                 }
-                const isPresent = values.find(
-                  (value) => value.day === date.day
-                );
-                if (isPresent) {
-                  setCurrValue(isPresent.value);
-                } else {
-                  setCurrValue(0);
-                }
+
                 setCurrentDay(date.day);
                 setOpen(true);
               }}
@@ -151,6 +179,31 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               monthBorderColor="#020817"
               dayBorderWidth={2}
               dayBorderColor="#020817"
+              tooltip={({ day, value }) => (
+                <div style={toolTipStyle}>
+                  <span style={{ fontSize: "16px" }}>
+                    {new Date(day).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  {data.type === "checkbox" ? (
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      {value ? <CheckCircle2 size={16} /> : null}
+                      {value ? "Completed" : "Not completed"}
+                    </span>
+                  ) : (
+                    <span>{`${value} ${data.unit}`}</span>
+                  )}
+                </div>
+              )}
               legends={[
                 {
                   anchor: "bottom-right",
@@ -165,6 +218,23 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               ]}
             />
           </div>
+          {data.type === "number" && (
+            <div className="flex justify-end items-center mt-4">
+              <div className="flex items-center space-x-2 md:mr-8">
+                <span className="text-sm font-medium">Less</span>
+                {colorsPallete[data.color as keyof typeof colorsPallete].map(
+                  (color: string, index: number) => (
+                    <div
+                      key={index}
+                      className="w-6 h-6 rounded"
+                      style={{ backgroundColor: color }}
+                    />
+                  )
+                )}
+                <span className="text-sm font-medium">More</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (
@@ -194,7 +264,18 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   );
 }
 
-function ElementDialog({
+interface ElementDialogProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  currentDay: string | null;
+  type: string;
+  values: CalendarValue[];
+  setValues: React.Dispatch<React.SetStateAction<CalendarValue[]>>;
+  unit: string;
+  id: string;
+}
+
+export function ElementDialog({
   open,
   setOpen,
   currentDay,
@@ -203,156 +284,188 @@ function ElementDialog({
   setValues,
   unit,
   id,
-  currValue,
-}: {
-  open: boolean;
-  setOpen: React.Dispatch<boolean>;
-  currentDay: string | null;
-  type: string;
-  values: CalendarValue[];
-  setValues: React.Dispatch<CalendarValue[]>;
-  unit: string;
-  id: string;
-  currValue: number;
-}) {
+}: ElementDialogProps) {
   const dispatch = useAppDispatch();
-  const [value, setValue] = useState<number | "">(currValue); // State for numeric input
-  const [isChecked, setIsChecked] = useState<boolean>(false); // State for checkbox
   const { user } = useAppSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState<number | "">("");
+  const [isChecked, setIsChecked] = useState(false);
+  const [journal, setJournal] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    setValue(currValue);
-  }, [currValue]);
+    if (currentDay && open) {
+      const currentValue = values.find(
+        (item: CalendarValue) => item.day === currentDay
+      );
+      if (currentValue) {
+        setValue(currentValue.value);
+        setJournal(currentValue.journal || "");
+        setIsChecked(true);
+        setIsEditing(false);
+      } else {
+        setValue("");
+        setJournal("");
+        setIsChecked(false);
+        setIsEditing(true);
+      }
+    }
+  }, [currentDay, open, values]);
 
-  function handleClose() {
+  const handleClose = () => {
+    setOpen(false);
+    setValue("");
+    setJournal("");
     setIsChecked(false);
-    setOpen(!open);
-    setValue(currValue);
-  }
+    setIsEditing(false);
+  };
 
-  async function handleSave() {
-    if (type === "number") {
-      if (value === 0 || value === "") {
-        if (type == "number") {
-          toast.error("you have not entered any value.", {
-            id: "HabitCalendar",
-          });
-          return;
-        }
-      }
-
-      if (typeof value === "number" && value <= 0) {
-        toast.error("Please enter valid value", { id: "HabitCalendar" });
-        return;
-      }
-
-      if (typeof value === "string" && value <= "0") {
-        toast.error("Please enter a valid value", { id: "HabitCalendar" });
-        return;
-      }
+  const handleSave = async () => {
+    if (
+      type === "number" &&
+      (value === "" || (typeof value === "number" && value <= 0))
+    ) {
+      toast.error("Please enter a valid value", { id: "HabitCalendar" });
+      return;
     }
 
     if (!isChecked) {
-      toast.error("please check the checkbox", { id: "HabitCalendar" });
+      toast.error("Please check the checkbox", { id: "HabitCalendar" });
       return;
     }
 
     setLoading(true);
 
     if (currentDay) {
-      let check = false;
-      const updatedValue = values.map((item: CalendarValue) => {
-        if (item.day === currentDay) {
-          check = true;
-          return { ...item, value: value as number };
-        }
-        return item;
-      });
+      const newValue: CalendarValue = {
+        day: currentDay,
+        value:
+          type === "number"
+            ? typeof value === "number"
+              ? value
+              : parseFloat(value) || 0
+            : 100,
+        journal,
+      };
 
-      if (!check) {
-        updatedValue.push({
-          day: currentDay as string,
-          value: value == 0 ? 100 : (value as number),
-        } as CalendarValue);
-      }
+      const updatedValues = values.some((item) => item.day === currentDay)
+        ? values.map((item) => (item.day === currentDay ? newValue : item))
+        : [...values, newValue];
+
       try {
         await setDoc(
           doc(db, `users/${user.uid}/habits`, id),
           {
-            value: updatedValue,
+            value: updatedValues,
           },
-          {
-            merge: true,
-          }
+          { merge: true }
         );
-        setValues(updatedValue);
-        dispatch(
-          updateValue({
-            habitId: id,
-            day: currentDay,
-            value,
-          })
-        );
+        setValues(updatedValues);
+        dispatch(updateValue(newValue));
+        toast.success("Habit updated successfully", { id: "HabitCalendar" });
+        setIsEditing(false);
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : "something went wrong";
+          error instanceof Error ? error.message : "Something went wrong";
         toast.error(errorMessage, { id: "HabitCalendar" });
+      } finally {
+        setOpen(false);
       }
     }
     setLoading(false);
-    setOpen(!open);
-    setValue(currValue);
-    setIsChecked(false);
-  }
+  };
 
+  const remainingLines = 8 - journal.split("\n").length;
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Track the day</DialogTitle>
+          <DialogTitle className=" flex gap-6 items-center">
+            <span>Track the day</span>
+            <div className=" flex gap-2 items-center">
+              <span>{<Calendar className=" h-12 w-4" />}</span>
+              <span>{currentDay?.split("-").reverse().join("-")}</span>
+            </div>
+          </DialogTitle>
           <DialogDescription>
-            {type == "checkbox"
+            {type === "checkbox"
               ? "Mark the checkbox for this day. Click save when you're done."
               : "Add the value and mark the checkbox for this day. Click save when you're done."}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center justify-center gap-4 py-4">
-          {type == "number" && (
-            <div className="flex w-full items-center  gap-4">
-              <Label htmlFor="value" className="text-right flex gap-2">
+        <div className="grid gap-4 py-4">
+          {type === "number" && (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="value" className="text-right">
                 Value
-                <span className=" text-slate-500 ">({unit})</span>
               </Label>
               <Input
                 id="value"
                 type="number"
+                disabled={!isEditing}
                 value={value}
                 onChange={(e) =>
-                  setValue(e.target.value ? parseInt(e.target.value) : "")
+                  setValue(e.target.value ? parseFloat(e.target.value) : "")
                 }
-                className="col-span-3"
-                placeholder="Enter value"
+                className={`col-span-3 ${
+                  !isEditing
+                    ? "bg-muted text-foreground cursor-default overflow-x-auto whitespace-nowrap"
+                    : ""
+                }`}
+                placeholder={`Enter value (${unit})`}
               />
             </div>
           )}
-          {/* Checkbox input using Shadcn Checkbox component */}
-          <div className="flex w-full items-center  gap-14">
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="journal" className="text-right">
+              Journal
+            </Label>
+            <Textarea
+              disabled={!isEditing}
+              id="journal"
+              placeholder="Write your daily accomplishment..."
+              value={journal}
+              onChange={(e) => {
+                const lines = e.target.value.split("\n");
+                if (lines.length <= 8) {
+                  setJournal(e.target.value);
+                } else {
+                  setJournal(lines.slice(0, 8).join("\n"));
+                }
+              }}
+              className={`col-span-3 resize-none ${
+                !isEditing
+                  ? "text-white opacity-100 cursor-default overflow-y-auto"
+                  : ""
+              }`}
+              rows={8}
+              style={{ WebkitTextFillColor: "inherit" }}
+            />
+            <div className="col-span-3 col-start-2 text-sm text-muted-foreground">
+              {remainingLines} {remainingLines === 1 ? "line" : "lines"}{" "}
+              remaining
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="check" className="text-right">
               Completed
             </Label>
-            <div className="col-span-1">
-              <Checkbox
-                id="check"
-                checked={isChecked}
-                onCheckedChange={(checked) => setIsChecked(!!checked)}
-              />
-            </div>
+            <Checkbox
+              disabled={!isEditing}
+              id="check"
+              checked={isChecked}
+              onCheckedChange={(checked) => setIsChecked(!!checked)}
+              className={`col-span-3 ${!isEditing ? "cursor-default" : ""}`}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSave} disabled={loading}>
-            {loading ? "Loading..." : "Save changes"}
+          <Button
+            type="submit"
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            disabled={loading}
+          >
+            {loading ? "Saving..." : isEditing ? "Save changes" : "Edit"}
           </Button>
         </DialogFooter>
       </DialogContent>

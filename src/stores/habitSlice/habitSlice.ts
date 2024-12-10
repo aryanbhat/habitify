@@ -26,6 +26,10 @@ export const fetchHabitsList = createAsyncThunk(
         };
         habitArr.push(newHabitObj);
       });
+
+      // TO SORT WHICH EVER HABIT YOU USE DAILY TO BE ON THE TOP
+      habitArr.sort((a, b) => (b.value.length || 0) - (a.value.length || 0));
+
       return habitArr;
     } catch (error) {
       const errorMsg =
@@ -49,7 +53,7 @@ export const habitSlice = createSlice({
       }
     },
     updateValue: (state, { payload }) => {
-      const { habitId, day, value } = payload;
+      const { habitId, day, value, journal } = payload;
 
       const habit = state.data?.find((habit: HabitDataSchema) => {
         return habit.id === habitId;
@@ -59,8 +63,9 @@ export const habitSlice = createSlice({
         const currValue = habit.value?.find((elem) => elem.day === day);
         if (currValue) {
           currValue.value = value;
+          currValue.journal = journal;
         } else {
-          habit.value.push({ day, value });
+          habit.value.push({ day, value, journal });
         }
       }
     },

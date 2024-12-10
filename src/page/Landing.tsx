@@ -2,30 +2,68 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowRight,
-  faCalendarAlt,
-  faChartLine,
-  faClock,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { CalendarValue, HabitValue } from "@/Types/type";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { auth } from "@/firebaseConfig";
 import HabitCalendar from "@/components/LandingHabitCalendar";
 import { useAppDispatch } from "@/hooks/reduxHook";
-import { CalendarValue, HabitValue } from "@/Types/type";
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
   const [calendarValue, setCalendarValue] = useState<CalendarValue[]>([]);
 
   const handleRedirection = () => {
     dispatch(setNavbarState(2));
     navigate("/login");
   };
+
+  const productivityQuotes = [
+    "Productivity is being able to do things that you were never able to do before. – Franz Kafka",
+    "The tragedy in life doesn’t lie in not reaching your goal. The tragedy lies in having no goal to reach. – Benjamin E. Mays",
+    "Working on the right thing is probably more important than working hard. – Caterina Fake",
+    "Efficiency is doing things right. Effectiveness is doing the right things. – Peter Drucker",
+    "Where your attention goes, your time goes. – Idowu Koyenikan",
+    "Knowledge is the source of wealth. Applied to tasks we already know, it becomes productivity. Applied to tasks that are new, it becomes innovation. – Peter Drucker",
+    "Procrastination is the fear of success. – Denis Waitley",
+    "Sometimes, things may not go your way, but the effort should be there every single night. – Michael Jordan",
+    "If you spend too much time thinking about a thing, you’ll never get it done. – Bruce Lee",
+    "The way to get started is to quit talking and begin doing. – Walt Disney",
+    "Action is the foundational key to all success. – Pablo Picasso",
+    "We have a strategic plan. It’s called doing things. – Herb Kelleher",
+    "You see, in life, lots of people know what to do, but few people actually do what they know. – Tony Robbins",
+    "Focus on being productive instead of busy. – Tim Ferriss",
+    "The secret of getting ahead is getting started. – Mark Twain",
+    "Time management is about life management. – Idowu Koyenikan",
+    "Your mind is for having ideas, not holding them. – David Allen",
+    "Don’t think about what can happen in a month or a year. Focus on the 24 hours in front of you. – Eric Thomas",
+    "Touch paper only once. – Robert Allen",
+    "Success is a lousy teacher. It seduces smart people into thinking they can’t lose. – Bill Gates",
+    "What we fear doing most is usually what we most need to do. – Tim Ferriss",
+    "Motivation is what gets you started. Habit is what keeps you going. – Jim Rohn",
+    "Fall in love with the process, and the results will come. – Eric Thomas",
+    "Starve your distraction and feed your focus. – Unknown",
+    "What gets measured gets managed. – Peter Drucker",
+    "Continuous improvement is better than delayed perfection. – Mark Twain",
+    "Lost time is never found again. – Benjamin Franklin",
+    "If you want something done, give it to a busy man. – Preston Sturges",
+    "Plans are nothing; planning is everything. – Dwight D. Eisenhower",
+    "Practice isn’t the thing you do once you’re good. It’s the thing you do that makes you good. – Malcolm Gladwell",
+    "Life’s gardeners pluck the weeds and care only for the productive plants. – Bryant McGill",
+    "It’s not always that we need to do more but rather that we need to focus on less. – Nathan W. Morris",
+    "Soon is not as good as now. – Seth Godin",
+    "The true price of anything you do is the amount of time you exchange for it. – Henry David Thoreau",
+    "Busy is a decision. – Debbie Millman",
+    "Improved productivity means less human sweat, not more. – Henry Ford",
+    "The least productive people are usually the ones who are most in favor of holding meetings. – Thomas Sowell",
+    "You miss 100% of the shots you don’t take. – Wayne Gretzky",
+    "Either you run the day or the day runs you. – Jim Rohn",
+    "Problems become opportunities when the right people join together. – Robert Redfort",
+    "The only way to achieve the impossible is to believe it is possible. – Charles Kingsleigh",
+    "Action breeds confidence and courage. – Dale Carnegie",
+    "The best way to predict the future is to create it. – Peter Drucker",
+    "Success is the sum of small efforts, repeated day in and day out. – Robert Collier",
+  ];
 
   useEffect(() => {
     dispatch(setNavbarState(0));
@@ -59,7 +97,14 @@ export default function LandingPage() {
     today.setHours(0, 0, 0, 0);
 
     const updatedCalendarValue: CalendarValue[] = [
-      { day: "2024-01-20", value: 10 },
+      {
+        day: "2024-01-20",
+        value: 10,
+        journal:
+          productivityQuotes[
+            Math.floor(Math.random() * productivityQuotes.length)
+          ],
+      },
     ];
 
     allDates2024.forEach((date) => {
@@ -68,7 +113,11 @@ export default function LandingPage() {
       if (!updatedCalendarValue.some((item) => item.day === dateString)) {
         updatedCalendarValue.push({
           day: dateString,
-          value: Math.floor(Math.random() * 10) + 1, // Random value between 1 and 100
+          value: Math.floor(Math.random() * 10) + 1,
+          journal:
+            productivityQuotes[
+              Math.floor(Math.random() * productivityQuotes.length)
+            ],
         });
       }
     });
@@ -95,8 +144,6 @@ export default function LandingPage() {
     },
   };
 
-  // const calendarValue = [{ day: "2024-01-01", value: 1 }];
-
   const calendarData: HabitValue = {
     title: "The one thing you always wanted to do",
     longestStreak: true,
@@ -110,37 +157,29 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <motion.div
-        className="max-w-6xl mx-auto px-4 py-16 sm:px-6 lg:px-8 flex flex-col justify-center items-center"
+        className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        <motion.h1
-          className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-center text-primary mb-8"
-          variants={itemVariants}
-        >
-          Elevate Your Productivity
-        </motion.h1>
-        <motion.p
-          className="text-lg md:text-xl lg:text-2xl text-center text-muted-foreground mb-12"
-          variants={itemVariants}
-        >
-          Track your habits with beautiful calendar heat maps and customizable
-          statistics.
-        </motion.p>
-        <motion.div
-          className="flex justify-center mb-16"
-          variants={itemVariants}
-        >
+        <motion.div className="text-center mb-16" variants={itemVariants}>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-primary mb-6 leading-tight">
+            Transform Your Habits,
+            <br />
+            Elevate Your Life
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Visualize your progress, gain insights, and achieve your goals with
+            our intuitive habit tracking platform.
+          </p>
           <Button
             onClick={handleRedirection}
             size="lg"
-            className="flex items-center justify-center gap-2 text-lg"
+            className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <span>Start Your Journey</span>
-            <FontAwesomeIcon icon={faArrowRight} />
+            Start Your Journey
           </Button>
         </motion.div>
 
@@ -149,78 +188,78 @@ export default function LandingPage() {
           variants={containerVariants}
         >
           <FeatureCard
-            icon={faCalendarAlt}
+            icon="📊"
             title="Visual Habit Tracking"
             description="See your progress at a glance with intuitive calendar heat maps."
           />
           <FeatureCard
-            icon={faChartLine}
+            icon="📈"
             title="Insightful Analytics"
             description="Gain deep insights into your habits with customizable statistics and trends."
           />
           <FeatureCard
-            icon={faClock}
-            title="Build Lasting Habits"
-            description="Stay motivated and consistent with streak tracking and reminders."
+            icon="📓"
+            title="Daily Journaling"
+            description="Reflect on your habits with built-in journaling to track your thoughts and progress."
           />
         </motion.div>
 
         {calendarValue.length > 0 && (
-          <motion.div className="mb-16 " variants={itemVariants}>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-              See Your Progress in Action
+          <motion.div
+            className="mb-16 flex flex-col items-center"
+            variants={itemVariants}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+              Visualize Your Progress
             </h2>
-            <div className="w-[80vw] ">
-              <div className="w-[81vw]">
-                <HabitCalendar data={calendarData} />
-              </div>
+            <div className="w-[90vw] max-w-[1400px] min-w-[300px]">
+              <HabitCalendar data={calendarData} />
             </div>
           </motion.div>
         )}
 
         <motion.div className="mb-16" variants={itemVariants}>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
             Why Choose Our Habit Tracker?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <BenefitItem
-              icon={faCheck}
-              title="Easy to Use"
-              description="Intuitive interface that makes habit tracking a breeze."
+              icon="✨"
+              title="Intuitive Interface"
+              description="Easy-to-use design that makes habit tracking a seamless part of your day."
             />
             <BenefitItem
-              icon={faCheck}
-              title="Customizable"
-              description="Tailor your habit tracking experience to your specific needs."
+              icon="🎨"
+              title="Fully Customizable"
+              description="Tailor your habit tracking experience to fit your unique lifestyle and goals."
             />
             <BenefitItem
-              icon={faCheck}
+              icon="🧠"
               title="Data-Driven Insights"
-              description="Gain valuable insights into your habits and behaviors."
+              description="Unlock valuable insights into your habits and behaviors to drive personal growth."
             />
             <BenefitItem
-              icon={faCheck}
-              title="Cross-Platform"
-              description="Access your habits on any device, anytime, anywhere."
+              icon="🌐"
+              title="Cross-Platform Access"
+              description="Track your habits on any device, ensuring consistency wherever you go."
             />
           </div>
         </motion.div>
 
         <motion.div className="text-center" variants={itemVariants}>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready to Transform Your Habits?
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Transform Your Life?
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join thousands of users who have already improved their lives with
-            our habit tracker.
+            our powerful habit tracking tools.
           </p>
           <Button
             onClick={handleRedirection}
             size="lg"
-            className="flex items-center justify-center gap-2 text-lg mx-auto"
+            className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <span>Get Started Now</span>
-            <FontAwesomeIcon icon={faArrowRight} />
+            Get Started Now
           </Button>
         </motion.div>
       </motion.div>
@@ -233,30 +272,21 @@ function FeatureCard({
   title,
   description,
 }: {
-  icon: any;
+  icon: string;
   title: string;
   description: string;
 }) {
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-    },
-  };
-
   return (
     <motion.div
-      className="bg-card text-card-foreground rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl relative overflow-hidden group"
+      className="bg-card text-card-foreground rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl relative overflow-hidden group"
       whileHover={{ scale: 1.05 }}
-      variants={itemVariants}
     >
       <div className="relative z-10">
-        <FontAwesomeIcon icon={icon} className="text-4xl text-primary mb-4" />
-        <h2 className="text-xl font-semibold mb-2">{title}</h2>
+        <span className="text-4xl mb-4 block">{icon}</span>
+        <h2 className="text-2xl font-semibold mb-3">{title}</h2>
         <p className="text-muted-foreground">{description}</p>
       </div>
-      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
     </motion.div>
   );
 }
@@ -266,17 +296,15 @@ function BenefitItem({
   title,
   description,
 }: {
-  icon: any;
+  icon: string;
   title: string;
   description: string;
 }) {
   return (
     <div className="flex items-start">
-      <div className="flex-shrink-0 mt-1">
-        <FontAwesomeIcon icon={icon} className="text-2xl text-primary" />
-      </div>
-      <div className="ml-4">
-        <h3 className="text-lg font-semibold mb-1">{title}</h3>
+      <div className="flex-shrink-0 mt-1 text-2xl mr-4">{icon}</div>
+      <div>
+        <h3 className="text-xl font-semibold mb-2">{title}</h3>
         <p className="text-muted-foreground">{description}</p>
       </div>
     </div>

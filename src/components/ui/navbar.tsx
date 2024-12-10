@@ -72,12 +72,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <span
-              className="text-xl font-bold text-primary cursor-pointer"
+              className="text-xl font-bold text-primary cursor-pointer flex items-center"
               onClick={() => {
                 navigate("/");
               }}
             >
-              HabitTracker
+              <img src="/logo.png" className=" h-12" />
+              <span>HabitTracker</span>
             </span>
           </div>
 

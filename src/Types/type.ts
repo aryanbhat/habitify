@@ -8,9 +8,11 @@ export type HabitValue = {
   type: string;
   unit: string;
   id: string;
+  createdAt?: string;
 };
 
 export type CalendarValue = {
   value: number;
   day: string;
+  journal: string;
 };
