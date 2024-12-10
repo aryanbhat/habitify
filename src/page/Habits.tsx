@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { setNavbarState } from "@/stores/navbarSlice/navbarSlice";
 import { fetchHabitsList } from "@/stores/habitSlice/habitSlice";
@@ -12,21 +12,12 @@ export default function Habits() {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
   const { isLoading, data } = useAppSelector((state) => state.habits);
-  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     dispatch(setNavbarState(0));
     if (user.uid) {
       dispatch(fetchHabitsList(user.uid));
     }
-    // some time to show the animation
-    const contentTimer = setTimeout(() => {
-      setShowContent(true);
-    }, 3000);
-
-    return () => {
-      clearTimeout(contentTimer);
-    };
   }, [dispatch, user.uid]);
 
   return (
@@ -34,7 +25,7 @@ export default function Habits() {
       <div className="flex flex-col items-center justify-center gap-6 mb-4 p-4 w-[90vw]">
         {data && <CreateHabitModal />}
 
-        {!showContent || isLoading ? (
+        {isLoading ? (
           <div className="w-full flex justify-center items-center mt-60">
             <LoadingBlockAnimationComp />
           </div>
