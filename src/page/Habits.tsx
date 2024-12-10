@@ -6,6 +6,7 @@ import CreateHabitModal from "@/components/modal/CreateHabitModal";
 import HabitCalendar from "@/components/HabitCalendar";
 import AnimatedComponent from "@/components/AnimatedComponent";
 import { HabitValue } from "@/Types/type";
+import LoadingBlockAnimationComp from "@/components/LoadingBlockAnimationComp/LoadingBlockAnimationComp";
 
 export default function Habits() {
   const dispatch = useAppDispatch();
@@ -34,13 +35,8 @@ export default function Habits() {
         {data && data?.length <= 5 && <CreateHabitModal />}
 
         {!showContent || isLoading ? (
-          <div className="w-full flex justify-center items-center">
-            <iframe
-              width="300"
-              height="300"
-              className="w-[300px] h-[300px]"
-              src="https://lottie.host/embed/66d1a1df-b11d-4447-8260-9815560d4b9b/QvwzVU19gp.json"
-            ></iframe>
+          <div className="w-full flex justify-center items-center mt-60">
+            <LoadingBlockAnimationComp />
           </div>
         ) : (
           <>
