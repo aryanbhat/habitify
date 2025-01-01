@@ -30,6 +30,14 @@ import { useAppDispatch, useAppSelector } from "@/hooks/reduxHook";
 import { updateValue } from "@/stores/habitSlice/habitSlice";
 import { Textarea } from "./ui/textarea";
 import HabitDropDown from "./HabitDropDown";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface CalendarData {
   longestStreak: number;
@@ -39,7 +47,7 @@ interface CalendarData {
 
 export default function HabitCalendar(props: { data: HabitValue }) {
   const data: HabitValue = props.data;
-
+  const [year, setYear] = useState(new Date().getFullYear().toString());
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(data.value);
   const [currentDay, setCurrentDay] = useState<string | null>("");
@@ -121,6 +129,11 @@ export default function HabitCalendar(props: { data: HabitValue }) {
     return false;
   }
 
+  function handleYearChange(value: string) {
+    console.log(value);
+    setYear(value);
+  }
+
   return (
     <div className="  bg-card text-card-foreground rounded-xl border shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ">
       <div className="p-6 space-y-6">
@@ -131,13 +144,18 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             </h2>
             <Button
               onClick={handleTodayLog}
-              className={` ${handleLogDisable() && " cursor-not-allowed"}`}
+              className={` ${
+                handleLogDisable() && " cursor-not-allowed"
+              } hidden md:inline`}
             >
               Log Today
             </Button>
           </div>
-          <HabitDropDown data={data} handleTodayLog={handleEditTodayLog} />
-        </div>{" "}
+          <div className="flex gap-6 items-center justify-center">
+            <YearSelect handleYearChange={handleYearChange} year={year} />
+            <HabitDropDown data={data} handleTodayLog={handleEditTodayLog} />
+          </div>
+        </div>
         <p className="text-sm text-muted-foreground mb-2 block">
           Click on any square in the calendar grid to view or edit the details
           for that day.
@@ -152,7 +170,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           values={values}
           id={data.id}
         />
-        <div className=" w-full overflow-x-auto">
+        <div className=" w-full overflow-x-scroll md:overflow-x-visible ">
           <div className="min-w-[1100px] h-[40vh]">
             <ResponsiveCalendar
               onClick={(date) => {
@@ -169,9 +187,9 @@ export default function HabitCalendar(props: { data: HabitValue }) {
                 setOpen(true);
               }}
               data={values}
-              from={`${new Date().getFullYear()}-01-01`}
+              from={`${year}-01-01`}
               theme={theme}
-              to={`${new Date().getFullYear()}-12-31`}
+              to={`${year}-12-31`}
               emptyColor="#131D33"
               colors={colorsPallete[data.color as keyof typeof colorsPallete]}
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -218,24 +236,24 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               ]}
             />
           </div>
-          {data.type === "number" && (
-            <div className="flex justify-end items-center mt-4">
-              <div className="flex items-center space-x-2 md:mr-8">
-                <span className="text-sm font-medium">Less</span>
-                {colorsPallete[data.color as keyof typeof colorsPallete].map(
-                  (color: string, index: number) => (
-                    <div
-                      key={index}
-                      className="w-6 h-6 rounded"
-                      style={{ backgroundColor: color }}
-                    />
-                  )
-                )}
-                <span className="text-sm font-medium">More</span>
-              </div>
-            </div>
-          )}
         </div>
+        {data.type === "number" && (
+          <div className="flex justify-end items-center mt-4">
+            <div className="flex items-center space-x-2 md:mr-8">
+              <span className="text-sm font-medium">Less</span>
+              {colorsPallete[data.color as keyof typeof colorsPallete].map(
+                (color: string, index: number) => (
+                  <div
+                    key={index}
+                    className="w-6 h-6 rounded"
+                    style={{ backgroundColor: color }}
+                  />
+                )
+              )}
+              <span className="text-sm font-medium">More</span>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t  border-border">
           {data.longestStreak && (
             <StatCard
@@ -496,5 +514,31 @@ function StatCard({
         </div>
       </div>
     </div>
+  );
+}
+
+function YearSelect({
+  handleYearChange,
+  year,
+}: {
+  handleYearChange: (value: string) => void;
+  year: string;
+}) {
+  return (
+    <Select onValueChange={handleYearChange} value={year}>
+      <SelectTrigger className=" w-28">
+        <SelectValue placeholder="Select Year" />
+      </SelectTrigger>
+      <SelectContent>
+        <ScrollArea>
+          <SelectItem key="2024" value="2024">
+            2024
+          </SelectItem>
+          <SelectItem key="2025" value="2025">
+            2025
+          </SelectItem>
+        </ScrollArea>
+      </SelectContent>
+    </Select>
   );
 }

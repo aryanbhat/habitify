@@ -23,7 +23,6 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import { Checkbox } from "./ui/checkbox";
-// import { formatDate } from "@/utils/formatDate";
 import {
   Select,
   SelectContent,
@@ -32,7 +31,6 @@ import {
   SelectValue,
 } from "./ui/select";
 import { ScrollArea } from "./ui/scroll-area";
-import { formatDate } from "@/utils/formatDate";
 import { Textarea } from "./ui/textarea";
 
 interface CalendarData {
@@ -158,20 +156,13 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           unit={data.unit}
           values={values}
         />
-        <div className="w-full overflow-x-auto" ref={calendarRef}>
-          <div className="min-w-[1000px] h-[40vh]">
+        <div
+          className="w-full overflow-x-scroll md:overflow-x-visible  "
+          ref={calendarRef}
+        >
+          <div className="min-w-[1000px] h-[40vh] ">
             <ResponsiveCalendar
               onClick={(date) => {
-                const today = formatDate(new Date());
-                if (date.day > today) {
-                  // toast.error(
-                  //   "Oops! You can't select a future date. Please complete today's task first.",
-                  //   {
-                  //     id: "LandingHabitCalendar",
-                  //   }
-                  // );
-                  return;
-                }
                 setCurrentDay(date.day);
                 setOpen(true);
               }}

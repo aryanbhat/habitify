@@ -98,7 +98,7 @@ export default function LandingPage() {
 
     const updatedCalendarValue: CalendarValue[] = [
       {
-        day: "2024-01-20",
+        day: "2025-01-01",
         value: 10,
         journal:
           productivityQuotes[
@@ -108,7 +108,6 @@ export default function LandingPage() {
     ];
 
     allDates2024.forEach((date) => {
-      if (date >= today) return;
       const dateString = date.toISOString().split("T")[0];
       if (!updatedCalendarValue.some((item) => item.day === dateString)) {
         updatedCalendarValue.push({
@@ -150,7 +149,7 @@ export default function LandingPage() {
     streak: true,
     total: true,
     value: calendarValue as CalendarValue[],
-    color: "coral",
+    color: "green",
     type: "number",
     unit: "hours",
     id: "asdfiw12323",
