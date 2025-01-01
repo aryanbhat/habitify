@@ -146,7 +146,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
               onClick={handleTodayLog}
               className={` ${
                 handleLogDisable() && " cursor-not-allowed"
-              } hidden md:inline`}
+              }  hidden sm:inline `}
             >
               Log Today
             </Button>
@@ -156,6 +156,14 @@ export default function HabitCalendar(props: { data: HabitValue }) {
             <HabitDropDown data={data} handleTodayLog={handleEditTodayLog} />
           </div>
         </div>
+        <Button
+          onClick={handleTodayLog}
+          className={` ${
+            handleLogDisable() && " cursor-not-allowed"
+          }   block sm:hidden `}
+        >
+          Log Today
+        </Button>
         <p className="text-sm text-muted-foreground mb-2 block">
           Click on any square in the calendar grid to view or edit the details
           for that day.
