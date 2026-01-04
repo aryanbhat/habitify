@@ -130,7 +130,6 @@ export default function HabitCalendar(props: { data: HabitValue }) {
   }
 
   function handleYearChange(value: string) {
-    console.log(value);
     setYear(value);
   }
 
@@ -178,7 +177,7 @@ export default function HabitCalendar(props: { data: HabitValue }) {
           values={values}
           id={data.id}
         />
-        <div className=" w-full overflow-x-scroll md:overflow-x-visible ">
+        <div className=" w-full overflow-x-auto">
           <div className="min-w-[1100px] h-[40vh]">
             <ResponsiveCalendar
               onClick={(date) => {
@@ -539,12 +538,11 @@ function YearSelect({
       </SelectTrigger>
       <SelectContent>
         <ScrollArea>
-          <SelectItem key="2024" value="2024">
-            2024
-          </SelectItem>
-          <SelectItem key="2025" value="2025">
-            2025
-          </SelectItem>
+          {Array.from({ length: new Date().getFullYear() - 2023 }, (_, i) => 2024 + i).map((yr) => (
+            <SelectItem key={yr} value={yr.toString()}>
+              {yr}
+            </SelectItem>
+          ))}
         </ScrollArea>
       </SelectContent>
     </Select>

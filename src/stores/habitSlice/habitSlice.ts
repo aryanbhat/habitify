@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { HabitDataSchema, initialState } from "./common";
 import { collection, DocumentData, getDocs } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import { doc, updateDoc } from "firebase/firestore";
+import { HabitValue } from "@/Types/type";
 
 export const fetchHabitsList = createAsyncThunk(
   "habits/fetchHabitsList",
@@ -23,6 +25,7 @@ export const fetchHabitsList = createAsyncThunk(
           type: data.type || "",
           unit: data.unit || "",
           value: data.value || [],
+          order: data?.order || 0
         };
         habitArr.push(newHabitObj);
       });
@@ -38,6 +41,25 @@ export const fetchHabitsList = createAsyncThunk(
     }
   }
 );
+
+export const reorderHabits = createAsyncThunk(
+  "habits/reorderHabits",
+  async ({ userId, habits }: { userId: string; habits: HabitValue[] }) => {
+    try {
+      // Update the order field for each habit in Firestore
+      const updates = habits.map((habit, index) => {
+        const habitRef = doc(db, "users", userId, "habits", habit.id);
+        return updateDoc(habitRef, { order: index });
+      });
+
+      await Promise.all(updates);
+      return habits;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 
 export const habitSlice = createSlice({
   name: "habits",

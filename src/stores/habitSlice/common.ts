@@ -10,6 +10,7 @@ export type HabitDataSchema = {
   type: string;
   unit: string;
   value: CalendarValue[];
+  order?: number;
 };
 
 export interface HabitState {

@@ -9,6 +9,7 @@ export type HabitValue = {
   unit: string;
   id: string;
   createdAt?: string;
+  order?: number;
 };
 
 export type CalendarValue = {

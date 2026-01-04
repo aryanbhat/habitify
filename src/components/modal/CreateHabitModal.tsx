@@ -76,6 +76,7 @@ function CreateHabitModal() {
     const newHabit = {
       ...values,
       value: [],
+      order: data?.length || 0, // Add order field
       createdAt: serverTimestamp(),
     };
 
